@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Trainer — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F7F6F2;--card:#fff;--border:#E8E5DE;--text:#1A1A18;--muted:#7A7870;--light:#B8B5AD;--green:#2E7D32;--green-bg:#E8F5E9;--yellow:#E65100;--yellow-bg:#FFF3E0;--red:#C62828;--red-bg:#FFEBEE;--blue:#1565C0;--blue-bg:#E3F2FD;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.demo-banner{background:#17503D;color:rgba(255,255,255,0.45);text-align:center;padding:6px;font-size:11px;letter-spacing:0.05em}
+.demo-banner b{color:#fff}
+.topbar{background:#1E5C47;padding:11px 14px;position:sticky;top:0;z-index:100}
+.topbar-inner{max-width:720px;margin:0 auto;display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px}
+.topbar-title{color:#fff;font-size:15px;font-weight:600}
+.topbar-sub{color:rgba(255,255,255,0.38);font-size:11px;margin-top:1px}
+.trainer-list{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-start;flex:1;min-width:0}
+.t-pill{display:flex;align-items:center;gap:5px;padding:2px 0}
+.t-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.t-name{font-size:11px;color:rgba(255,255,255,0.75);font-weight:500}
+.main{padding:14px;max-width:720px;margin:0 auto}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all 0.15s;white-space:nowrap}
+.tab.active{background:#1E5C47;color:#fff;border-color:#1E5C47}
+.tab .count{font-size:10px;opacity:0.6;margin-left:3px}
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.toolbar input{flex:1;min-width:140px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--card);color:var(--text);outline:none}
+.sort-btn{padding:7px 12px;border:1px solid var(--border);border-radius:10px;font-size:12px;background:var(--card);color:var(--muted);cursor:pointer;white-space:nowrap}
+.sort-btn.active{background:#1E5C47;color:#fff;border-color:#1E5C47}
+.summary-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.s-pill{font-size:11px;font-weight:500;padding:4px 10px;border-radius:99px}
+.s-done{background:var(--green-bg);color:var(--green)}
+.s-wip{background:#FFF8E1;color:#F57F17}
+.s-open{background:var(--yellow-bg);color:var(--yellow)}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden;transition:box-shadow 0.15s}
+.p-card:hover{box-shadow:0 2px 10px rgba(0,0,0,0.06)}
+.p-header{display:flex;align-items:center;gap:10px;padding:11px 13px}
+.p-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;cursor:pointer;position:relative}
+.p-info{flex:1;min-width:0}
+.p-name{font-size:14px;font-weight:500;cursor:pointer;border-bottom:1px dashed var(--border);display:inline-block;padding-bottom:1px}
+.p-name:hover{border-color:var(--muted)}
+.p-name-input{font-size:14px;font-weight:500;border:1.5px solid #1E88E5;border-radius:6px;padding:2px 7px;outline:none;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;width:170px}
+.p-meta{font-size:11px;color:var(--light);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.p-since{font-family:'DM Mono',monospace}
+.p-last{font-size:10px;color:var(--light);font-style:italic}
+.p-contact-btn{font-size:10px;color:var(--light);background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:2px 8px;cursor:pointer;display:inline-block;transition:all 0.12s}
+.p-contact-btn:hover{color:var(--muted)}
+.ampel{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ampel.green{background:#43A047}
+.ampel.yellow{background:#FB8C00}
+.ampel.red{background:#E53935}
+.ampel.done-amp{background:#1E88E5}
+.p-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.p-pct{font-size:13px;font-weight:600}
+.p-progbar{width:72px;height:6px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+.p-progfill{height:100%;border-radius:99px;transition:width 0.4s}
+.p-stats-row{display:flex;gap:4px}
+.p-stat{font-size:10px;padding:2px 6px;border-radius:99px;font-weight:500}
+.p-stat.done{background:var(--green-bg);color:var(--green)}
+.p-stat.open{background:var(--yellow-bg);color:var(--yellow)}
+.p-chevron{font-size:10px;color:var(--light);transition:transform 0.2s;margin-left:2px;cursor:pointer;padding:4px;align-self:center}
+.p-chevron.open{transform:rotate(180deg)}
+.done-badge{background:var(--blue-bg);color:var(--blue);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid #90CAF9}
+.contact-wrap{display:none;border-top:1px solid var(--border);padding:11px 13px;background:#FAFAF8}
+.contact-wrap.visible{display:block}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.c-field{display:flex;flex-direction:column;gap:3px}
+.c-label{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--light)}
+.c-input{font-size:12px;border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none;width:100%}
+.c-input:focus{border-color:#1E88E5}
+.c-note{font-size:12px;border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;outline:none;width:100%;resize:none}
+.move-bar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.move-label{font-size:11px;color:var(--muted)}
+.move-btn{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--muted);transition:all 0.12s}
+.move-btn:hover{background:var(--text);color:#fff;border-color:var(--text)}
+.move-btn.finish{background:var(--blue-bg);color:var(--blue);border-color:#90CAF9}
+.move-btn.finish:hover{background:var(--blue);color:#fff}
+.tasks-wrap{border-top:1px solid var(--border);padding:10px 13px 13px;display:none}
+.tasks-wrap.visible{display:block}
+.b-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;border:1px solid var(--border);background:#fff;margin-bottom:5px;cursor:pointer;transition:background 0.12s}
+.b-item.category{background:#E8F5F0;border-color:#1E5C47;border-left:4px solid #1E5C47;cursor:default;pointer-events:none}
+.b-item.category .b-label{font-weight:600;color:#1E5C47}
+.b-item.category-gray{background:#F1EFE8;border-color:#B8B5AD;border-left:4px solid #B8B5AD;cursor:default;pointer-events:none}
+.b-item.category-gray .b-label{font-weight:600;color:#7A7870}
+.b-item.sub-category{background:#F0F7F4;border-color:#7FB5A0;border-left:4px solid #7FB5A0;cursor:pointer;}
+.b-item.sub-category .b-label{font-weight:600;color:#1E5C47;font-size:12px;display:flex;align-items:center;justify-content:space-between;width:100%}
+.sub-cat-arrow{font-size:10px;color:#7FB5A0;transition:transform 0.2s;}
+.sub-cat-arrow.open{transform:rotate(180deg)}
+.b-item.sub-item{margin-left:12px;border-left:3px solid #E0EEE9;}
+.b-item.locked{background:#fff;opacity:1;cursor:pointer}
+.subtask-wrap{display:none;padding:4px 0 4px 36px;flex-direction:column;gap:4px}
+.subtask-wrap.visible{display:flex}
+.subtask-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;transition:background 0.12s}
+.subtask-item:hover{background:var(--bg)}
+.subtask-check{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.subtask-check.done{background:#1E5C47;border-color:#1E5C47;color:#fff}
+.subtask-label{font-size:12px;color:var(--text)}
+.subtask-label.done{color:var(--light);text-decoration:line-through}
+.locked-hint{font-size:10px;color:#aaa;margin-left:auto;white-space:nowrap}
+.b-item:hover{background:var(--bg)}
+.b-item.pending{border-color:#FFCC80;background:#FFFAF5}
+.b-badge{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.b-badge.open{background:var(--bg);border:1.5px solid var(--border);color:var(--light)}
+.b-badge.wip{background:#FFF8E1;border:1.5px solid #FFD54F;color:#F57F17}
+.b-badge.done{color:#fff}
+.b-label{flex:1;font-size:12px;color:var(--text);line-height:1.4}
+.b-label.done{color:var(--light);text-decoration:line-through}
+.b-label.ph{color:var(--light);font-style:italic}
+.b-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.b-date{font-size:10px;color:var(--light);font-family:'DM Mono',monospace}
+.b-tbadge{font-size:9px;font-weight:700;padding:2px 5px;border-radius:99px;color:#fff}
+.exp-row{display:none;padding:0 10px 8px 44px;flex-direction:column;gap:6px}
+.exp-row.visible{display:flex}
+.wip-check{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;padding:3px 0}
+.wip-check input{accent-color:#E53935;width:14px;height:14px}
+.note-box{background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)}
+.note-lbl{font-size:10px;color:var(--light);margin-bottom:4px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.note-ta{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);resize:none;outline:none;min-height:44px;line-height:1.5}
+.note-save{margin-top:5px;padding:5px 11px;background:#1A1A18;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.crit-box{background:#F0F9F5;border-radius:8px;padding:10px 12px;border:1px solid #A8D5C2;margin-bottom:8px;}
+.crit-lbl{font-size:10px;color:#1E5C47;margin-bottom:5px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+.crit-text{font-size:12px;color:#1A1A18;line-height:1.7;}
+.crit-section{margin-top:9px;padding-top:8px;border-top:1px solid #C8E8DC;}
+.crit-section-title{font-size:11px;font-weight:700;color:#1E5C47;margin-bottom:3px;}
+.legend{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:16px}
+.leg-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--light);margin-bottom:10px}
+.leg-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px;color:var(--muted)}
+.leg-badge{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.tip{margin-top:10px;font-size:11px;color:var(--light);line-height:1.6}
+@media(max-width:600px){
+  .topbar{flex-direction:column;align-items:flex-start}
+  .trainer-list{width:100%}
+  .contact-grid{grid-template-columns:1fr}
+  .p-progbar{width:55px}
+}
+.pw-overlay{position:fixed;inset:0;background:#1E5C47;display:flex;align-items:center;justify-content:center;z-index:9999;}
+.pw-box{background:#fff;border-radius:16px;padding:36px 32px;max-width:320px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.25);}
+.pw-logo{font-size:32px;margin-bottom:8px;}
+.pw-title{font-size:18px;font-weight:700;color:#1E5C47;margin-bottom:4px;font-family:'DM Sans',sans-serif;}
+.pw-sub{font-size:12px;color:#888;margin-bottom:24px;font-family:'DM Sans',sans-serif;}
+.pw-input{width:100%;padding:11px 14px;border:1.5px solid #C8E8DC;border-radius:8px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;text-align:center;box-sizing:border-box;}
+.pw-email{margin-bottom:8px;}
+.pw-input:focus{border-color:#1E5C47;}
+.pw-btn{margin-top:12px;width:100%;padding:11px;background:#1E5C47;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.pw-secondary{background:#fff;color:#1E5C47;border:1px solid #C8E8DC}
+.pw-link{display:block;margin-top:12px;color:#1E5C47;font-size:12px;text-decoration:underline;cursor:pointer}
+.pw-err{margin-top:10px;font-size:12px;color:#E53935;min-height:16px;font-family:'DM Sans',sans-serif;}
+.participant-modal{position:fixed;inset:0;background:rgba(26,26,24,.45);display:none;align-items:center;justify-content:center;z-index:5000;padding:16px}
+.participant-modal.visible{display:flex}
+.participant-form{background:#fff;border-radius:14px;padding:22px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.participant-form h2{font-size:18px;color:#1E5C47;margin-bottom:14px}
+.participant-form label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+.participant-form input,.participant-form select{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:7px;font:12px 'DM Sans',sans-serif}
+.participant-form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.participant-form-actions button{padding:8px 12px;border-radius:7px;border:1px solid var(--border);cursor:pointer;font:12px 'DM Sans',sans-serif}
+.participant-form-actions .primary{background:#1E5C47;color:#fff;border-color:#1E5C47}
+.participant-form-error{min-height:16px;color:#C62828;font-size:11px;margin-top:8px}
+body.participant-mode .trainer-list,body.participant-mode .toolbar,body.participant-mode .tabs,body.participant-mode .legend{display:none}
+body.participant-mode .p-contact-btn,body.participant-mode .contact-wrap,body.participant-mode .move-bar{display:none}
+body.participant-mode .p-name{pointer-events:none;border-bottom:none;cursor:default}
+body.participant-mode .tasks-wrap .note-save,body.participant-mode .tasks-wrap .wip-check{display:none}
+body.participant-mode .tasks-wrap .note-box{display:none}
+body.participant-mode .tasks-wrap .subtask-item{pointer-events:none;cursor:default}
+body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textarea{pointer-events:none;background:#F5F5F5}
+</style>
+</head>
+<body>
+<div id="pw-overlay" class="pw-overlay">
+  <div class="pw-box">
+    <div class="pw-logo">🐾</div>
+    <div class="pw-title">Medical Trainer</div>
+    <div class="pw-sub">Bitte anmelden</div>
+    <input id="pw-email" class="pw-input pw-email" type="email" placeholder="E-Mail-Adresse" autocomplete="username" onkeydown="if(event.key==='Enter')checkPw()">
+    <input id="pw-input" class="pw-input" type="password" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="pw-btn" onclick="checkPw()">Anmelden</button>
+    <span id="forgot-password-link" class="pw-link" onclick="forgotPassword()">Passwort vergessen?</span>
+    <div class="pw-err" id="pw-err"></div>
+  </div>
+</div>
+<div id="change-password-overlay" class="pw-overlay" style="display:none">
+  <div class="pw-box">
+    <div class="pw-logo">🔐</div>
+    <div class="pw-title">Neues Passwort</div>
+    <div class="pw-sub">Bitte ändere dein Startpasswort einmalig.</div>
+    <input id="new-password" class="pw-input" type="password" minlength="8" placeholder="Neues Passwort" autocomplete="new-password">
+    <input id="new-password-confirm" class="pw-input" type="password" minlength="8" placeholder="Passwort wiederholen" autocomplete="new-password">
+    <button class="pw-btn" onclick="changeInitialPassword()">Passwort ändern</button>
+    <button class="pw-btn pw-secondary" onclick="doLogout()">Abmelden</button>
+    <div class="pw-err" id="change-password-err"></div>
+  </div>
+</div>
+<div id="participant-modal" class="participant-modal" onclick="if(event.target===this)closeParticipantForm()">
+  <form class="participant-form" onsubmit="createParticipant(event)">
+    <h2>Teilnehmer hinzufügen</h2>
+    <label for="participant-name">Name</label>
+    <input id="participant-name" required autocomplete="name">
+    <label for="participant-email">E-Mail</label>
+    <input id="participant-email" type="email" required autocomplete="email">
+    <label for="participant-password">Startpasswort</label>
+    <input id="participant-password" type="password" minlength="8" required autocomplete="new-password">
+    <label for="participant-group">Gruppe</label>
+    <select id="participant-group"><option value="aktiv">Aktiv</option><option value="gemeinschaft">Gemeinschaft</option><option value="abgeschlossen">Abgeschlossen</option></select>
+    <div id="participant-form-error" class="participant-form-error"></div>
+    <div class="participant-form-actions"><button type="button" onclick="closeParticipantForm()">Abbrechen</button><button class="primary" type="submit">Teilnehmer speichern</button></div>
+  </form>
+</div>
+<div class="demo-banner"><b>✦ DEMO</b> — Alle Namen sind Platzhalter ✦</div>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <div class="topbar-title">Medical Trainer</div>
+      <div class="topbar-sub">Ausbildungsstand — Demo</div>
+    </div>
+    <div class="trainer-list" id="trainer-pills" aria-label="Trainer"></div>
+    <button onclick="doLogout()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;flex-shrink:0;">Abmelden</button>
+  </div>
+</div>
+<div class="main">
+  <div class="tabs" id="tabs"></div>
+  <div class="toolbar">
+    <input type="text" placeholder="Nach Name suchen..." onkeyup="filterList(this.value)">
+    <button class="sort-btn active" onclick="setSort('date',this)">Nach Datum</button>
+    <button class="sort-btn" onclick="setSort('pct',this)">Nach Fortschritt</button>
+    <button class="sort-btn" onclick="setSort('alpha',this)">A–Z</button>
+    <button class="sort-btn" onclick="addParticipant()" style="background:#E3F2FD;color:#1565C0;border-color:#90CAF9;">+ Teilnehmer</button>
+  </div>
+  <div class="summary-bar" id="summary-bar"></div>
+  <div id="list-container"></div>
+  <div class="legend">
+    <div class="leg-title">Legende</div>
+    <div class="leg-row"><div class="ampel green" style="width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>Grün — über 60% erledigt</div>
+    <div class="leg-row"><div class="ampel yellow" style="width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>Orange — 30–60%</div>
+    <div class="leg-row"><div class="ampel red" style="width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>Rot — unter 30%</div>
+    <div class="leg-row"><div class="ampel done-amp" style="width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>Blau — Abgeschlossen</div>
+    <div class="leg-row"><div class="leg-badge" style="background:#F5F5F5;border:1.5px solid #E0E0E0;"></div>Offen</div>
+    <div class="leg-row"><div class="leg-badge" style="background:#FFF8E1;border:1.5px solid #FFD54F;color:#F57F17;font-size:10px;">…</div>In Bearbeitung</div>
+    <div class="leg-row"><div class="leg-badge" style="background:#E53935;color:#fff;font-size:9px;">T1</div>Freigegeben mit Trainer-Kürzel</div>
+    <div class="tip">💡 Oben werden die vier Trainer angezeigt. Dein Admin-Konto bestimmt, welcher Trainer bei Freigaben eingetragen wird.<br>💡 Teilnehmernamen antippen zum Umbenennen<br>💡 👤 für Kontaktdaten · Gruppe wechseln per Knopf in Kontaktdaten</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Supabase Initialisierung
+const SUPABASE_URL = 'https://ochsxihdxfhgqqorzxaf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jaHN4aWhkeGZoZ3Fxb3J6eGFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxMzMwNjAsImV4cCI6MjEwMjcwOTA2MH0.qkpf_j6ENRNsuPBEjDQD6Yw2WT8lLq9RZ_0STRPWfCI';
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+console.log('✅ Supabase verbunden:', SUPABASE_URL);
+
+let authTimer;
+let passwordRecoveryMode=false;
+function showLogin(message='') {
+  passwordRecoveryMode=false;
+  document.getElementById('pw-overlay').style.display='flex';
+  document.getElementById('change-password-overlay').style.display='none';
+  document.getElementById('pw-email').value='';
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-err').textContent=message;
+}
+
+function showApp() {
+  document.getElementById('pw-overlay').style.display='none';
+  document.getElementById('change-password-overlay').style.display='none';
+}
+
+function showPasswordChange(){
+  document.getElementById('pw-overlay').style.display='none';
+  document.getElementById('pw-err').textContent='';
+  document.getElementById('change-password-overlay').style.display='flex';
+  document.querySelector('#change-password-overlay .pw-title').textContent=passwordRecoveryMode?'Passwort zurücksetzen':'Neues Passwort';
+  document.getElementById('new-password').value='';
+  document.getElementById('new-password-confirm').value='';
+  document.getElementById('change-password-err').textContent='';
+}
+
+window.changeInitialPassword=async function(){
+  const password=document.getElementById('new-password').value.trim();
+  const confirmation=document.getElementById('new-password-confirm').value.trim();
+  const errorElement=document.getElementById('change-password-err');
+  if(password.length<8){errorElement.textContent='Das Passwort muss mindestens 8 Zeichen haben.';return;}
+  if(password!==confirmation){errorElement.textContent='Die Passwörter stimmen nicht überein.';return;}
+  errorElement.textContent='Passwort wird geändert...';
+  try{
+    const {data,error}=await supabaseClient.auth.updateUser({password});
+    if(error){errorElement.textContent='Passwort konnte nicht geändert werden: '+error.message;return;}
+    const {error:profileError}=await supabaseClient.rpc('complete_password_change');
+    if(profileError){errorElement.textContent='Passwort geändert, aber Status konnte nicht aktualisiert werden: '+profileError.message;return;}
+    const {error:metadataError}=await supabaseClient.auth.updateUser({data:{must_change_password:false}});
+    if(metadataError){errorElement.textContent='Passwort geändert, aber der Abschluss konnte nicht gespeichert werden: '+metadataError.message;return;}
+    if(data.user){
+      passwordRecoveryMode=false;
+      showApp();
+      await loadUserProfile();
+    }
+  }catch(error){
+    errorElement.textContent='Technischer Fehler: '+(error.message||'Bitte später erneut versuchen.');
+  }
+};
+
+window.forgotPassword=async function(){
+  const email=document.getElementById('pw-email').value.trim();
+  const errorElement=document.getElementById('pw-err');
+  const link=document.getElementById('forgot-password-link');
+  if(!email){errorElement.textContent='Bitte zuerst deine E-Mail-Adresse eingeben.';return;}
+  if(link.dataset.busy==='true')return;
+  link.dataset.busy='true';
+  link.style.pointerEvents='none';
+  errorElement.textContent='E-Mail wird gesendet...';
+  const redirectTo=window.location.origin+window.location.pathname;
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo});
+  if(error){
+    errorElement.textContent=error.message.includes('rate limit')
+      ?'Zu viele Anfragen. Bitte warte einige Minuten und versuche es danach erneut.'
+      :'E-Mail konnte nicht gesendet werden: '+error.message;
+  }else errorElement.textContent='Eine E-Mail zum Zurücksetzen wurde gesendet.';
+  window.setTimeout(()=>{link.dataset.busy='false';link.style.pointerEvents='auto';},60000);
+};
+
+window.checkPw=async function(){
+  const email=document.getElementById('pw-email').value.trim();
+  const password=document.getElementById('pw-input').value;
+  const errorElement=document.getElementById('pw-err');
+  if(!email||!password){errorElement.textContent='Bitte E-Mail und Passwort eingeben';return;}
+  errorElement.textContent='Anmeldung läuft...';
+  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error){errorElement.textContent='Anmeldung fehlgeschlagen: '+error.message;return;}
+  await loadUserProfile();
+};
+
+window.doLogout=async function(){
+  clearTimeout(authTimer);
+  passwordRecoveryMode=false;
+  await supabaseClient.auth.signOut();
+  showLogin();
+};
+
+async function loadUserProfile(){
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user)return;
+  const {data:profile,error}=await supabaseClient.from('profiles').select('role,display_name,must_change_password,trainer_id').eq('id',user.id).maybeSingle();
+  if(error){console.warn('Profil konnte nicht geladen werden:',error.message);return;}
+  if(!profile){
+    await supabaseClient.auth.signOut();
+    showLogin('Für dieses Konto wurde noch kein Profil angelegt.');
+    return;
+  }
+  if(profile.must_change_password===true||user.user_metadata?.must_change_password===true){showPasswordChange();return;}
+  if(profile.role==='admin'){
+    showApp();
+    document.body.classList.remove('participant-mode');
+    document.querySelector('.topbar-sub').textContent='Admin — '+profile.display_name;
+    await loadTrainerProfiles(profile.trainer_id,profile.display_name);
+    await loadParticipantsFromDatabase();
+    return;
+  }
+  if(profile.role==='participant'){
+    showApp();
+    document.body.classList.add('participant-mode');
+    document.querySelector('.topbar-sub').textContent='Mein Ausbildungsstand — '+profile.display_name;
+    await loadOwnParticipantData(user.id);
+  }
+}
+
+async function loadTrainerProfiles(currentTrainerId,currentDisplayName){
+  const {data,error}=await supabaseClient.from('profiles').select('trainer_id,display_name').eq('role','admin').not('trainer_id','is',null);
+  if(error)console.warn('Trainerprofile konnten nicht geladen werden:',error.message);
+  (data||[]).forEach(profile=>{
+    const trainer=trainers.find(item=>item.id===Number(profile.trainer_id));
+    if(trainer&&profile.display_name){
+      trainer.name=profile.display_name;
+      trainer.short=profile.display_name.split(' ').map(word=>word[0]).join('').slice(0,2).toUpperCase();
+    }
+  });
+  const trainer=trainers.find(item=>item.id===Number(currentTrainerId))||trainers[0];
+  if(currentDisplayName)trainer.name=currentDisplayName;
+  trainer.short=trainer.name.split(' ').map(word=>word[0]).join('').slice(0,2).toUpperCase();
+  activeTrainer=trainer;
+  initPills();
+}
+
+async function loadParticipantsFromDatabase(){
+  const [{data,error},{data:progressRows, error:progressError},{data:noteRows,error:noteError}]=await Promise.all([
+    supabaseClient.from('participants').select('id,display_name,email,phone,notes,participant_group,animals,created_at').order('created_at'),
+    supabaseClient.from('participant_progress').select('participant_id,state'),
+    supabaseClient.from('participant_admin_notes').select('participant_id,state')
+  ]);
+  if(error||progressError||noteError){console.warn('Teilnehmer konnten nicht geladen werden:',error?.message||progressError?.message||noteError?.message);return;}
+  if(!data.length)return;
+  state={};
+  const progressByParticipant=new Map((progressRows||[]).map(row=>[row.participant_id,row.state||{}]));
+  const notesByParticipant=new Map((noteRows||[]).map(row=>[row.participant_id,row.state||{}]));
+  (progressRows||[]).forEach(row=>Object.assign(state,row.state||{}));
+  (noteRows||[]).forEach(row=>Object.assign(state,row.state||{}));
+  participants=data.map(p=>{
+    const saved=progressByParticipant.get(p.id)||{};
+    return {id:p.id,name:p.display_name,group:p.participant_group||'aktiv',since:new Date(p.created_at).toLocaleDateString('de-DE'),tel:p.phone||'',email:p.email,tiere:p.animals?.length?p.animals:[{art:'',name:''}],notiz:p.notes||''};
+  });
+  initTabs();renderList();
+}
+
+async function loadOwnParticipantData(userId){
+  const [{data:participant,error:participantError},{data:progress,error:progressError}]=await Promise.all([
+    supabaseClient.from('participants').select('id,display_name,email,phone,notes,participant_group,animals,created_at').eq('id',userId).maybeSingle(),
+    supabaseClient.from('participant_progress').select('state').eq('participant_id',userId).maybeSingle()
+  ]);
+  if(participantError||progressError){
+    console.warn('Eigene Teilnehmerdaten konnten nicht geladen werden:',participantError?.message||progressError?.message);
+    return;
+  }
+  if(!participant){showLogin('Teilnehmerdatensatz nicht gefunden.');return;}
+  const savedState=progress?.state||{};
+  Object.keys(savedState).forEach(key=>{
+    if(key.endsWith('_note')||key.endsWith('_note_trainer')||key.endsWith('_goal')||key.includes('_kf_'))delete savedState[key];
+  });
+  activeGroup=participant.participant_group||'aktiv';
+  state=savedState;
+  participants=[{id:participant.id,name:participant.display_name,group:activeGroup,since:new Date(participant.created_at).toLocaleDateString('de-DE'),tel:participant.phone||'',email:participant.email,tiere:participant.animals?.length?participant.animals:[{art:'',name:''}],notiz:participant.notes||''}];
+  initTabs();renderList();
+}
+
+async function persistParticipantProgress(participantId){
+  if(document.body.classList.contains('participant-mode'))return;
+  const participantState={};
+  const privateNotes={};
+  Object.keys(state).forEach(key=>{
+    if(!key.startsWith(participantId+'|'))return;
+    if(key.endsWith('_note')||key.endsWith('_note_trainer'))privateNotes[key]=state[key];
+    else participantState[key]=state[key];
+  });
+  const {error}=await supabaseClient.from('participant_progress').upsert({
+    participant_id:participantId,
+    state:participantState,
+    updated_at:new Date().toISOString()
+  });
+  if(error)console.warn('Fortschritt konnte nicht gespeichert werden:',error.message);
+  const {error:notesError}=await supabaseClient.from('participant_admin_notes').upsert({
+    participant_id:participantId,
+    state:privateNotes,
+    updated_at:new Date().toISOString()
+  });
+  if(notesError)console.warn('Trainernotizen konnten nicht gespeichert werden:',notesError.message);
+}
+
+async function persistParticipantDetails(participantId){
+  if(document.body.classList.contains('participant-mode'))return;
+  const participant=getP(participantId);
+  if(!participant)return;
+  const {error}=await supabaseClient.from('participants').update({
+    display_name:participant.name,
+    phone:participant.tel||null,
+    email:participant.email,
+    notes:participant.notiz||null,
+    participant_group:participant.group||'aktiv',
+    animals:participant.tiere||[],
+    updated_at:new Date().toISOString()
+  }).eq('id',participantId);
+  if(error)console.warn('Teilnehmerdaten konnten nicht gespeichert werden:',error.message);
+}
+
+async function initializeAuth(){
+  const recoveryUrl=new URL(window.location.href);
+  const recoveryHash=decodeURIComponent(window.location.hash||'');
+  const isRecovery=recoveryHash.includes('type=recovery')||recoveryUrl.searchParams.get('type')==='recovery';
+  if(isRecovery){
+    passwordRecoveryMode=true;
+    showPasswordChange();
+  }
+  supabaseClient.auth.onAuthStateChange((_event,currentSession)=>{
+    if(_event==='PASSWORD_RECOVERY'&&currentSession){passwordRecoveryMode=true;showPasswordChange();return;}
+    if(passwordRecoveryMode&&isRecovery)return;
+    if(!currentSession)showLogin();
+  });
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(isRecovery){
+    passwordRecoveryMode=true;
+    showPasswordChange();
+    return;
+  }
+  if(session){showApp();await loadUserProfile();}else showLogin();
+}
+
+// Testtabelle: Datenbank-Status prüfen
+async function testSupabaseConnection() {
+  try {
+    const { data, error, count } = await supabaseClient
+      .from('questions')
+      .select('id', { count: 'exact', head: true });
+    
+    if (error) {
+      console.warn('⚠️ Fehler beim Datenbanktest:', error.message);
+    } else {
+      console.log('✅ Supabase Datenbank ist bereit - Fragen vorhanden:', count);
+    }
+  } catch (err) {
+    console.error('❌ Supabase Verbindungsfehler:', err.message);
+  }
+}
+testSupabaseConnection();
+initializeAuth();
+
+const COLORS=['#E53935','#43A047','#1E88E5','#E91E8C'];
+const TRAINER_COLORS_BG=['#FFEBEE','#E8F5E9','#E3F2FD','#FCE4EC'];
+let trainers=[
+  {id:1,name:'Trainer 1',short:'T1',color:COLORS[0]},
+  {id:2,name:'Trainer 2',short:'T2',color:COLORS[1]},
+  {id:3,name:'Trainer 3',short:'T3',color:COLORS[2]},
+  {id:4,name:'Trainer 4',short:'T4',color:COLORS[3]},
+];
+
+const SUBTASKS={
+  'Trainingsplan 1':['Trainingsziel formuliert','Ausgangspunkt bestimmt','Trainingschritte formuliert','Praktische Umsetzung'],
+  'Trainingsplan 2':['Trainingsziel formuliert','Ausgangspunkt bestimmt','Trainingschritte formuliert','Praktische Umsetzung'],
+  'Trainingsplan 3':['Trainingsziel formuliert','Ausgangspunkt bestimmt','Trainingschritte formuliert','Praktische Umsetzung'],
+  'Kundenfall 1':['Trainingsplan erstellt','Verlauf des Trainings'],
+  'Kundenfall 2':['Trainingsplan erstellt','Verlauf des Trainings'],
+  'Kundenfall 3':['Trainingsplan erstellt','Verlauf des Trainings'],
+  'Boden-Target':['Positive Ablenkung','Dauer'],
+  'Kinn-Target / Hinterkopf-Target (Katze)':['Positive Ablenkung','Dauer'],
+  'Seitenlage / Brust-Bauch-Lage (Katze)':['Positive Ablenkung','Dauer'],
+  'Berührungen (im Stehen oder in der Seitenlage)':['Anfassen','Berührungen mit 3 Gegenständen','3 unangenehme Reize'],
+  'Fixieren':['Stehend','In Seitenlage'],
+  'Der Tisch':['Ruhig Stehen','Seitenwechsel','Berührungen im Stehen','Berührungen in der Seitenlage'],
+  'Pfoten untersuchen':['Manipulation mit den Händen','Berührung mit Gegenständen'],
+  'Verband anlegen':['An einer Vorderpfote','An einer Hinterpfote'],
+  'Ohren':['Ohren anfassen','Ohren auswischen','Ohrentropfen','Untersuchung mit dem Otoskop'],
+  'Augen':['Lidspalte öffnen','Augenregion säubern','Augentropfen','Augenuntersuchung'],
+  'Maul':['Kontrolle von Zahnfleisch und Zähnen','Zähne putzen','Maul öffnen','Tabletten eingeben','Flüssigkeiten eingeben'],
+  'Pfoten':['Pfoten untersuchen','Krallen schneiden oder schleifen','Verband anlegen','Pfotenschutz tragen'],
+  'Fellpflege':['Kämmen oder Bürsten','Scheren','Waschen','Föhnen'],
+  'Blutentnahme':['Stauschlauch','Rasieren','Desinfizieren','Venenpunktion simulieren','Röhrchen befüllen','Druckverband','Blutentnahme simulieren'],
+};
+
+const CRITERIA={
+  'Deckentraining / Boxentraining (Katze)':'Du schickst deinen Hund mit einem Wort- oder Sichtsignal auf eine Decke, die neben euch liegt. Dein Hund kann auch unter Ablenkung auf dieser Decke liegen bleiben. Du sitzt oder stehst dabei neben dem Hund.\n\nMit deiner Katze kannst du ebenfalls eine Decke trainieren. Du solltest aber auf jeden Fall die Transportbox mit der Katze trainieren. Hier gelten die gleichen Kriterien wie bei der Decke.\n\nZusätzlich soll deine Katze zwei Minuten in der geschlossenen Box warten können und sich von dir in der geschlossenen Box durch die Wohnung tragen lassen.',
+  'Boden-Target':{
+    main:'Wahlweise Vorderpfoten-Target oder Vier-Pfoten-Target',
+    sections:[
+      {title:'Ablenkung',text:'Dein Tier kann unter positiver Ablenkung auf dem Boden-Target bleiben (dabei müssen es keine zehn Sekunden sein). Beispielsweise Futter oder Spielzeug als Ablenkung. Du kannst auch andere Dinge, die es mag, als Ablenkung nutzen.'},
+      {title:'Dauer',text:'Dein Tier kann zehn Sekunden ruhig auf dem Boden-Target stehen.'},
+    ]
+  },
+  'Kinn-Target / Hinterkopf-Target (Katze)':{
+    main:'Kinn-Target auf der Hand und einem Gegenstand.\nMit der Katze kannst du wahlweise auch ein Hinterkopf-Target an der Hand trainieren.',
+    sections:[
+      {title:'Ablenkung',text:'Dein Tier kann auch unter positiver Ablenkung auf dem Kinn-Target (evtl. Hinterkopf-Target bei der Katze) bleiben (dabei müssen es keine zehn Sekunden sein). Beispielsweise Futter oder Spielzeug als Ablenkung. Du kannst auch andere Dinge, die es mag, als Ablenkung nutzen.'},
+      {title:'Dauer',text:'Dein Tier kann das Kinn-Target (Hinterkopf-Target) für zehn Sekunden halten.'},
+    ]
+  },
+  'Seitenlage / Brust-Bauch-Lage (Katze)':{
+    main:'Wahlweise rechte oder linke Seite.\nDein Tier legt sich auf Wort- oder Sichtsignal auf eine Seite ab. Du darfst dabei kein Leckerchen mehr als Lockmittel in der Hand halten.\nMit deiner Katze kannst du wahlweise auch ein Platz in Brust-Bauch-Lage trainieren.',
+    sections:[
+      {title:'Ablenkung',text:'Dein Tier kann auch unter positiver Ablenkung in der Seitenlage (evtl. Brust-Bauch-Lage bei der Katze) liegen bleiben (dabei müssen es keine zehn Sekunden sein). Beispielsweise Futter oder Spielzeug als Ablenkung. Du kannst auch andere Dinge, die es mag, als Ablenkung nutzen.'},
+      {title:'Dauer',text:'Dein Tier kann in Seitenlage (evtl. Brust-Bauch-Lage bei der Katze) für zehn Sekunden liegen bleiben.'},
+    ]
+  },
+  'Berührungen (im Stehen oder in der Seitenlage)':{
+    main:'Wahlweise im Stehen, Sitzen oder im Liegen.',
+    sections:[
+      {title:'Anfassen mit den Händen',text:'Du kannst dein Tier am ganzen Körper mit den Händen anfassen. Dabei liegt der Schwerpunkt auf dem Körper. Kopf und Pfoten werden wir später noch einmal bei den speziellen Aufgaben separat trainieren.'},
+      {title:'Berührungen mit drei Gegenständen',text:'Du kannst dein Tier mit mindestens drei verschiedenen Gegenständen an unterschiedlichen Stellen am Körper berühren.'},
+      {title:'Drei unangenehme Reize',text:'Dein Tier kann mindestens drei verschiedene unangenehme Reize gut aushalten.'},
+    ]
+  },
+  'Fixieren':{
+    main:'Eine Seite reicht für die Aufgabe aus. Es ist aber sinnvoll, das Fixieren auf beiden Seiten zu üben.',
+    sections:[
+      {title:'Stehend oder sitzend',text:'Dein Tier soll sich 10 Sekunden im Stehen oder Sitzen fixieren lassen.'},
+      {title:'In Seitenlage / Brust-Bauch-Lage (Katze)',text:'Dein Tier soll sich 10 Sekunden in Seitenlage (evtl. Brust-Bauch-Lage bei der Katze) fixieren lassen.'},
+    ]
+  },
+  'Hochheben':'Dein Tier lässt sich von dir (oder zu zweit) hochheben.\nDu kannst dein Tier bis zu drei Schritte tragen.',
+  'Der Tisch':{
+    main:'',
+    sections:[
+      {title:'Ruhig auf dem Tisch stehen',text:'Dein Tier kann zehn Sekunden ruhig auf dem Tisch stehen. Du stehst als Absicherung daneben, bewegst dich aber nicht. Einen Hund niemals alleine auf dem Tisch stehen lassen.'},
+      {title:'Mensch wechselt die Seite',text:'Dein Tier kann ruhig auf dem Tisch stehen, während du dich von einer Seite des Tisches auf die andere Seite bewegst. Dabei gehst du immer vorne um dein Tier herum, damit die Situation besser unter Kontrolle ist.'},
+      {title:'Berührungen im Stehen',text:'Du kannst dein Tier auf dem Tisch am ganzen Körper mit den Händen anfassen. Dabei liegt der Schwerpunkt auf dem Körper. Kopf und Pfoten werden wir später noch einmal bei den speziellen Aufgaben separat trainieren.\nDu kannst dein Tier auf dem Tisch mit mindestens drei verschiedenen Gegenständen an unterschiedlichen Stellen am Körper berühren.\nDein Tier kann auf dem Tisch mindestens drei verschiedene unangenehme Reize gut aushalten.'},
+      {title:'Seitenlage / Brust-Bauch-Lage (Katze)',text:'Du kannst dein Tier auf dem Tisch gezielt auf die rechte und auch auf die linke Seite legen (evtl. Brust-Bauch-Lage bei der Katze). Zur Sicherheit solltest du dein Tier immer mit dem Rücken auf dich zu kippen und als Absicherung nahe an der Tischkante stehen. Anschließend kann es dort 10 Sekunden liegen bleiben.'},
+      {title:'Berührungen in Seitenlage / Brust-Bauch-Lage (Katze)',text:'Du kannst dein Tier auf dem Tisch in Seitenlage (evtl. Brust-Bauch-Lage bei der Katze) am ganzen Körper anfassen und mit mindestens drei verschiedenen Gegenständen an unterschiedlichen Stellen am Körper berühren. Es kann außerdem in der Position mindestens drei verschiedene unangenehme Reize gut aushalten.'},
+    ]
+  },
+  'Ohren':{
+    main:'Die Aufgaben sollen auf beiden Seiten gezeigt werden.',
+    sections:[
+      {title:'Ohren anfassen',text:'Du kannst die Ohrmuschel deines Tieres von innen und außen untersuchen.'},
+      {title:'Ohren auswischen',text:'Du kannst die Ohren innen mit einem feuchten Tuch sauber machen, hierbei möglichst auch mit dem Finger in den Gehörgang gehen.'},
+      {title:'Ohrentropfen',text:'Du kannst die Gabe von Ohrentropfen simulieren. Dazu brauchst du nicht wirklich etwas in die Ohren zu träufeln im Training.'},
+      {title:'Untersuchung mit dem Otoskop',text:'Du kannst den Trichter des Otoskops in den Gehörgang deines Tieres einführen und anschließend durch das Otoskop ins Ohr schauen.'},
+    ]
+  },
+  'Augen':{
+    main:'Die Aufgaben sollen auf beiden Seiten gezeigt werden.',
+    sections:[
+      {title:'Lidspalte öffnen',text:'Du kannst die Augenregion deines Tieres mit den Fingern berühren und die Augenlider so aufziehen, dass man auch unter die Augenlider schauen kann (Schleimhäute beurteilen, nach Fremdkörper suchen).'},
+      {title:'Augenregion säubern',text:'Du kannst die Augenregion deines Tieres mit einem feuchten Tuch reinigen.'},
+      {title:'Augentropfen',text:'Du kannst die Gabe von Augentropfen simulieren. Hierbei musst du nicht unbedingt einen Tropfen wirklich ins Auge tropfen. Du solltest aber mindestens einen Tropfen auf den Nasenrücken tropfen können.'},
+      {title:'Augenuntersuchung',text:'Du kannst dich dem Auge deines Tieres bis auf 5 cm mit drei verschiedenen Gegenständen nähern.'},
+    ]
+  },
+  'Maul':{
+    main:'Die Aufgaben sollen auf beiden Seiten gezeigt werden.',
+    sections:[
+      {title:'Kontrolle von Zahnfleisch und Zähnen',text:'Du kannst deinem Tier am Oberkiefer die Lefze hochheben und das Zahnfleisch und die Zähne (einschließlich der Backenzähne) anschauen.\nDu kannst die kapilläre Rückfüllungszeit bestimmen.'},
+      {title:'Zähne putzen',text:'Du kannst deinem Tier die Zähne im Ober- und im Unterkiefer putzen. Dabei kannst du entscheiden, welches Werkzeug du dafür benutzen möchtest.\n– Elektrische oder manuelle Zahnbürste, Fingerling\n– Mit oder ohne Zahnpasta'},
+      {title:'Maul öffnen',text:'Dein Tier öffnet auf ein Signal aktiv sein Maul oder lässt es sich von dir passiv öffnen. Das Maul bleibt so weit und lange geöffnet, dass du die Maulhöhle inspizieren kannst oder eine Tablette eingeben kannst.'},
+      {title:'Tabletten eingeben',text:'Du kannst deinem Tier wahlweise eine Tablette oder ein Stück Futter eingeben.'},
+      {title:'Flüssigkeiten eingeben',text:'Du kannst je nach Größe deines Tieres 0,5 bis 1 ml Wasser ins Maul eingeben.'},
+    ]
+  },
+  'Pfoten':{
+    main:'Die Aufgaben sollen jeweils an einer Vorder- und einer Hinterpfote durchgeführt werden.',
+    sections:[
+      {title:'Pfoten untersuchen',text:'Du kannst die Pfoten deines Tieres von allen Seiten untersuchen. Hierbei kannst du auch mit den Fingern zwischen die Zehen und Ballen gehen und die Strukturen durchtasten.\nDu kannst außerdem die Pfoten mit drei verschiedenen Gegenständen berühren.'},
+      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:\n– alle Krallen einzeln fixieren\n– Berühren aller Krallen mit dem Werkzeug\n– Schneidegeräusch mittels Holzstäbchen, Nudel oder Zahnstocher bzw. das Geräusch und die Vibration des Krallenschleifers simulieren'},
+      {title:'Verband anlegen',text:'Du kannst deinem Tier einen Verband fachgerecht anlegen. Dabei muss in jeden Zwischenzehenspalt und um die komplette Pfote Verbandswatte gelegt werden. Anschließend wird die Pfote mit einer selbsthaftenden Binde umwickelt.'},
+      {title:'Pfotenschutz tragen',text:'Du kannst deinem Tier eine Socke oder einen Pfotenschuh anziehen. Dein Tier kann damit ein paar Schritte laufen. (In jedem Durchgang nur an einer Pfote)'},
+    ]
+  },
+  'Fellpflege':{
+    main:'',
+    sections:[
+      {title:'Kämmen oder Bürsten',text:'Du kannst das Fell deines Tieres an verschiedenen Stellen am Körper mit einem Kamm oder einer Bürste bearbeiten.'},
+      {title:'Scheren',text:'Du kannst mit der laufenden Schermaschine über den Körper deines Tieres fahren. Du musst hierbei nicht wirklich Haare abrasieren. Sollte eine regelmäßige Schur nötig sein, kannst du davon Ausschnitte zeigen.'},
+      {title:'Waschen',text:'Du kannst dein Tier mit einem tropfnassen Tuch am Körper abreiben oder etwas Wasser aus einem Behälter übergießen.\nIdeal ist, wenn du deinen Hund in der Dusche richtig abduschen kannst.'},
+      {title:'Föhnen',text:'Du kannst das Fell deines Tieres auf beiden Seiten föhnen.'},
+    ]
+  },
+  'Blutentnahme':{
+    main:'Die Aufgabe kann wahlweise am Vorderbein im Sitzen oder Stehen bzw. am Hinterbein im Stehen oder in der Seitenlage durchgeführt werden.',
+    sections:[
+      {title:'Stauschlauch',text:'Du kannst deinem Tier einen Stauschlauch anlegen und wieder abnehmen.'},
+      {title:'Rasieren',text:'Du kannst mit der laufenden Schermaschine an der Entnahmestelle entlangfahren und so das Rasieren simulieren.'},
+      {title:'Desinfizieren',text:'Du kannst die Entnahmestelle mit Alkohol desinfizieren.'},
+      {title:'Venenpunktion simulieren',text:'Du kannst mit einem spitzen Gegenstand die Punktion der Vene simulieren. Hier auf keinen Fall die Haut wirklich durchstechen.'},
+      {title:'Röhrchen befüllen',text:'Du kannst mindestens zweimal hintereinander ein Röhrchen für fünf Sekunden an die Entnahmestelle halten.'},
+      {title:'Druckverband',text:'Du kannst an der Entnahmestelle einen Druckverband mittels Tupfer und selbsthaftender Binde anlegen.'},
+      {title:'Blutentnahme simulieren',text:'Du kannst bei deinem Tier eine simulierte Blutentnahme durchführen.\nDabei kannst du die einzelnen Elemente der Blutentnahme ohne Zwischenbelohnung hintereinander durchführen.'},
+    ]
+  },
+  'Auf die Waage gehen':'Dein Tier geht auf ein Signal hin auf eine Tierwaage oder auf eine Fläche, die eine Tierwaage simuliert, und bleibt dort so lange sitzen, stehen oder liegen, bis es wieder runter gebeten wird (zehn Sekunden).',
+  'Mikrochip ablesen':'Diese Aufgabe eignet sich sehr gut, um eine fremde Person in dein Training einzubeziehen. Daher sollte nach Möglichkeit eine fremde Person den Mikrochip bei deinem Tier ablesen. Wenn es nicht möglich ist, dass eine fremde Person sich deinem Tier nähert, dann kannst auch du das Ablesen des Mikrochips vornehmen.\nWenn du kein Lesegerät zur Verfügung hast, kannst du die Aufgabe mit einem Handy simulieren.',
+  'Spot on auftragen':'Du kannst mit einer Spritze oder Pipette ein paar Tropfen Wasser im Nacken deines Tieres auftragen. Falls du ohnehin gerade ein Spot on verabreichen musst, kannst du auch das zeigen.',
+  'Fieber messen':'Du kannst deinem Tier mit dem Thermometer im After die Temperatur messen. Das Fieberthermometer bleibt so lange im After, bis es die aktuelle Körpertemperatur anzeigt (Piepton).',
+  'Maulkorb tragen (Hund) / Wrapping (Katze)':'Du kannst deinem Hund einen Maulkorb anziehen. Er kann damit 10 Sekunden stehen bleiben.\n\nDu kannst die Katze mithilfe der Wickelmethode „Scarf" nach Sophia Yin in ein Tuch einwickeln. Sie wartet so eingewickelt auf dem Tisch oder dem Boden, bis du das Tuch nach 10 Sekunden wieder aufwickelst.',
+  'Halskragen tragen':'Dein Tier lässt sich einen Halskragen anziehen und kann sich damit in der Wohnung bewegen (Hunde auch mit Leine).',
+  'Was ist Medical Training?':'Beschreibe mit deinen eigenen Worten, was Medical Training für dich bedeutet. Stell dir z.B. vor wie du einem Kunden erklärst, warum es sinnvoll ist, dass er mit seinem Tier das Medical Training startet.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Körpersprache von Hund und Mensch':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit der Körpersprache von Hund und Mensch im Training wichtig erscheint.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Dokumentation im Training':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit der Dokumentation von Training wichtig erscheint.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Verstärker und Strafen im Training':'Beschreibe mit deinen eigenen Worten, was mit den Begriffen Verstärker und Strafe im Training gemeint ist und wie sie sinnvoll eingesetzt werden können.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Klassische Konditionierung':'Beschreibe mit deinen eigenen Worten was man unter der klassischen Konditionierung versteht und wo sie im Medical Training sinnvoll eingesetzt werden kann.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Operante Konditionierung':'Beschreibe mit deinen eigenen Worten was man unter der instrumentellen / operanten Konditionierung versteht und wo sie im Medical Training sinnvoll eingesetzt werden kann.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Medical Training mit Welpen':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit dem Medical Training mit Welpen wichtig erscheint.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Abläufe in der Tierarztpraxis':'Beschreibe mit deinen eigenen Worten, wie ein Besuch in der Tierarztpraxis abläuft. Stell dir z.B. vor wie du einem Kunden erklärst, auf welche Art und Weise er sein Tier auf dem Tierarztbesuch vorbereiten kann.\n• Auf was muss er achten?\n• Wo gibt es Stolpersteine?\n• Was sind die absoluten Basics, die er trainieren sollte?\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Strategien für Notfälle':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit Strategien für Notfälle wichtig erscheint.\n• Was ist zu beachten bei Aggressionsverhalten zum Schutz des Menschen?\n• Mit welchen Tools kann ich ein Tier in einer untrainierten Situation unterstützen?\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Ausarbeitung eines Themas zur Veröffentlichung':'Hier hast du verschiedene Optionen:\n• Beitrag auf deiner eigenen Homepage\n• Beitrag für den Blog auf meiner Homepage\n• Artikel in einer Zeitschrift\n• Präsentation für einen Vortrag, den du hältst\n• Flyer für deine Kunden\n• oder ähnliches',
+};
+
+function critHTML(b){
+  const c=CRITERIA[b];
+  if(!c)return'';
+  if(typeof c==='string'){
+    return`<div class="crit-box"><div class="crit-lbl">📋 Kriterium</div><div class="crit-text">${c.replace(/\n/g,'<br>')}</div></div>`;
+  }
+  if(INLINE_CRIT_GROUPS.includes(b)){
+    return c.main?`<div class="crit-box"><div class="crit-lbl">📋 Kriterium</div><div class="crit-text">${c.main.replace(/\n/g,'<br>')}</div></div>`:'';
+  }
+  let h=`<div class="crit-box"><div class="crit-lbl">📋 Kriterium</div>${c.main?'<div class="crit-text">'+c.main.replace(/\n/g,'<br>')+'</div>':''}`;
+  (c.sections||[]).forEach(s=>{
+    h+=`<div class="crit-section"><div class="crit-section-title">${s.title}</div><div class="crit-text">${s.text.replace(/\n/g,'<br>')}</div></div>`;
+  });
+  return h+'</div>';
+}
+
+const BEHAVIORS=[
+  'Basics',
+  'Deckentraining / Boxentraining (Katze)','Boden-Target','Kinn-Target / Hinterkopf-Target (Katze)',
+  'Seitenlage / Brust-Bauch-Lage (Katze)',
+  'Berührungen (im Stehen oder in der Seitenlage)',
+  'Fixieren','Hochheben','Der Tisch',
+  'Kopf',
+  'Ohren',
+  'Augen',
+  'Maul',
+  'Pfoten_grp',
+  'Pfoten',
+  'Fellpflege_grp',
+  'Fellpflege',
+  'Blutentnahme_grp',
+  'Blutentnahme',
+  'Verschiedenes',
+  'Auf die Waage gehen','Mikrochip ablesen','Spot on auftragen',
+  'Fieber messen','Maulkorb tragen (Hund) / Wrapping (Katze)','Halskragen tragen',
+  'Trainingsplan',
+  'Trainingsplan 1','Trainingsplan 2','Trainingsplan 3',
+  'Kundenfälle',
+  'Kundenfall 1','Kundenfall 2','Kundenfall 3',
+  'Theoriethemen',
+  'Was ist Medical Training?',
+  'Körpersprache von Hund und Mensch',
+  'Dokumentation im Training',
+  'Verstärker und Strafen im Training',
+  'Klassische Konditionierung',
+  'Operante Konditionierung',
+  'Medical Training mit Welpen',
+  'Abläufe in der Tierarztpraxis',
+  'Strategien für Notfälle',
+  'Ausarbeitung eines Themas zur Veröffentlichung',
+  ...Array.from({length:4},(_,i)=>'__'+i),
+];
+
+const CAT_ITEMS=['Basics','Kopf','Pfoten_grp','Fellpflege_grp','Blutentnahme_grp','Verschiedenes'];
+const SUB_CAT_ITEMS=['Trainingsplan','Kundenfälle','Theoriethemen'];
+const INLINE_CRIT_GROUPS=['Pfoten','Fellpflege','Blutentnahme'];
+
+function rDate(offset){const d=new Date();d.setDate(d.getDate()-offset);return d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear();}
+function rDateStr(){return rDate(Math.floor(Math.random()*400)+30);}
+
+let participants=[
+  ...Array.from({length:26},(_,i)=>({id:'a'+(i+1),name:'Teilnehmer',group:'aktiv',since:rDateStr(),tel:'',email:'',tiere:[{art:'',name:''}],notiz:''})),
+  ...Array.from({length:15},(_,i)=>({id:'g'+(i+1),name:'Teilnehmer',group:'gemeinschaft',since:rDateStr(),tel:'',email:'',tiere:[{art:'',name:''}],notiz:''})),
+];
+
+let activeTrainer=trainers[0];
+let activeGroup='aktiv';
+let openCards=new Set();
+let openContact=new Set();
+let openExpand=new Set();
+let openSections=new Set();
+let editingName=null;
+let state={};
+let filterQ='';
+let sortMode='date';
+
+function today(){const d=new Date();return d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear();}
+function sk(pId,bIdx){return pId+'|'+bIdx;}
+function getP(pId){return participants.find(p=>p.id===pId);}
+
+function getProgress(pId){
+  let done=0,wip=0,total=0;
+  BEHAVIORS.forEach((b,i)=>{
+    if(b.startsWith('__')||CAT_ITEMS.includes(b)||SUB_CAT_ITEMS.includes(b))return;
+    total++;
+    const k=sk(pId,i);
+    if(state[k]&&state[k].status==='done')done++;
+    else if(state[k+'_wip'])wip++;
+  });
+  return{done,wip,open:total-done-wip,total};
+}
+
+function getLastEntry(pId){
+  let last=null;
+  BEHAVIORS.forEach((_,i)=>{
+    const k=sk(pId,i);
+    const s=state[k];
+    if(s&&s.status==='done'&&s.date){
+      if(!last||s.ts>last.ts)last={date:s.date,trainer:trainers.find(t=>t.id===s.trainer),ts:s.ts||0};
+    }
+  });
+  return last;
+}
+
+function ampelClass(pct,group){
+  if(group==='abgeschlossen')return 'done-amp';
+  if(pct>=60)return 'green';
+  if(pct>=30)return 'yellow';
+  return 'red';
+}
+function ampelColor(pct,group){
+  if(group==='abgeschlossen')return '#1E88E5';
+  if(pct>=60)return '#43A047';
+  if(pct>=30)return '#FB8C00';
+  return '#E53935';
+}
+
+function initPills(){
+  const wrap=document.getElementById('trainer-pills');
+  wrap.innerHTML='';
+  trainers.forEach(t=>{
+    const pill=document.createElement('div');
+    pill.className='t-pill';
+    const dot=document.createElement('div');
+    dot.className='t-dot';
+    dot.style.background=t.color;
+    const name=document.createElement('span');
+    name.className='t-name';
+    name.textContent=t.name;
+    pill.append(dot,name);
+    wrap.appendChild(pill);
+  });
+}
+
+function initTabs(){
+  const groups=[
+    {id:'aktiv',label:'Aktiv'},
+    {id:'gemeinschaft',label:'Gemeinschaft'},
+    {id:'abgeschlossen',label:'Abgeschlossen'},
+  ];
+  const wrap=document.getElementById('tabs');
+  wrap.innerHTML='';
+  groups.forEach(g=>{
+    const count=participants.filter(p=>p.group===g.id).length;
+    const el=document.createElement('div');
+    el.className='tab'+(activeGroup===g.id?' active':'');
+    el.innerHTML=`${g.label}<span class="count">(${count})</span>`;
+    el.onclick=()=>{
+      activeGroup=g.id;openCards.clear();openContact.clear();openExpand.clear();editingName=null;filterQ='';
+      document.querySelector('.toolbar input').value='';
+      initTabs();renderList();
+    };
+    wrap.appendChild(el);
+  });
+}
+
+function setSort(mode,el){sortMode=mode;document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderList();}
+window.setSort=setSort;
+
+function filterList(q){filterQ=q.toLowerCase();renderList();}
+
+function parseDate(str){if(!str)return new Date(0);const p=str.split('.');return new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));}
+
+function renderSummary(list){
+  let td=0,tw=0,to=0;
+  list.forEach(p=>{const pr=getProgress(p.id);td+=pr.done;tw+=pr.wip;to+=pr.open;});
+  document.getElementById('summary-bar').innerHTML=
+    `<div class="s-pill s-done">✓ ${td} erledigt</div>`+
+    `<div class="s-pill s-wip">… ${tw} in Bearbeitung</div>`+
+    `<div class="s-pill s-open">◯ ${to} offen</div>`;
+}
+
+function renderList(){
+  let list=participants.filter(p=>p.group===activeGroup&&p.name.toLowerCase().includes(filterQ));
+  if(sortMode==='date')list.sort((a,b)=>parseDate(a.since)-parseDate(b.since));
+  else if(sortMode==='num'){
+    list.sort((a,b)=>{
+      const na=parseInt(a.id.replace(/[^0-9]/g,''));
+      const nb=parseInt(b.id.replace(/[^0-9]/g,''));
+      return na-nb;
+    });
+  } else if(sortMode==='pct'){
+    list.sort((a,b)=>{
+      const pa=getProgress(a.id),pb=getProgress(b.id);
+      return (pa.done/pa.total)-(pb.done/pb.total);
+    });
+  } else list.sort((a,b)=>a.name.localeCompare(b.name,'de'));
+
+  renderSummary(list);
+  const container=document.getElementById('list-container');
+  container.innerHTML='';
+
+  list.forEach(p=>{
+    const pr=getProgress(p.id);
+    const pct=pr.done>0?Math.round((pr.done/pr.total)*100):0;
+    const isOpen=openCards.has(p.id);
+    const isContact=openContact.has(p.id);
+    const isEditing=editingName===p.id;
+    const last=getLastEntry(p.id);
+    const aColor=ampelColor(pct,p.group);
+    const isDone=p.group==='abgeschlossen';
+
+    let nameHTML=isEditing
+      ?`<input class="p-name-input" id="name_${p.id}" value="${p.name}" onblur="saveName('${p.id}')" onkeydown="if(event.key==='Enter')saveName('${p.id}')" onclick="event.stopPropagation()">`
+      :`<span class="p-name" onclick="startEditName(event,'${p.id}')">${p.name}</span>`;
+
+    const lastHTML=last?`<span class="p-last">zuletzt: ${last.trainer?last.trainer.short:''} am ${last.date}</span>`:'';
+    const doneBadge=isDone?`<span class="done-badge">✓ Abgeschlossen</span>`:'';
+
+    const otherGroups=[];
+    if(p.group!=='aktiv')otherGroups.push({id:'aktiv',label:'→ Aktiv'});
+    if(p.group!=='gemeinschaft')otherGroups.push({id:'gemeinschaft',label:'→ Gemeinschaft'});
+    if(p.group!=='abgeschlossen')otherGroups.push({id:'abgeschlossen',label:'✓ Abschließen',cls:'finish'});
+    const moveBtns=otherGroups.map(g=>`<button class="move-btn ${g.cls||''}" onclick="moveP('${p.id}','${g.id}')">${g.label}</button>`).join('');
+
+    let behaviorsHTML='';
+    let currentSection=null;
+    BEHAVIORS.forEach((b,i)=>{
+      const k=sk(p.id,i);
+      const s=state[k]||{status:'open'};
+      const noteVal=state[k+'_note']||'';
+      const noteTrainerId=state[k+'_note_trainer'];
+      const noteTrainer=noteTrainerId?trainers.find(t=>t.id===noteTrainerId):null;
+      const noteColor=noteTrainer?noteTrainer.color:activeTrainer.color;
+      const wipVal=state[k+'_wip']||false;
+      const isExpanded=openExpand.has(k);
+      const isPH=b.startsWith('__');
+      const isCat=CAT_ITEMS.includes(b);
+      const isSubCat=SUB_CAT_ITEMS.includes(b);
+      const isOpenTask=s.status!=='done'&&!wipVal&&!isPH&&!isCat&&!isSubCat;
+
+      if(isCat){
+        currentSection=null;
+        const catLabel=b.endsWith('_grp')?b.replace('_grp',''):b;
+        behaviorsHTML+=`<div class="b-item category"><div class="b-label">${catLabel}</div></div>`;
+        return;
+      }
+      if(isSubCat){
+        currentSection=b;
+        const isOpen=openSections.has(b);
+        behaviorsHTML+=`<div class="b-item sub-category" onclick="toggleSection('${b}')"><div class="b-label">${b}<span class="sub-cat-arrow${isOpen?' open':''}">▼</span></div></div>`;
+        return;
+      }
+      if(currentSection&&!openSections.has(currentSection))return;
+      const isSubItem=currentSection!==null;
+
+      const subs=SUBTASKS[b]||[];
+      const allSubsDone=subs.length>0&&subs.every((_,si)=>{const sk2=k+'_sub'+si;return state[sk2]&&state[sk2].status==='done';});
+      const isSubOpen=openExpand.has(k+'_sub');
+      const trainerObj=s.status==='done'?(trainers.find(x=>x.id===s.trainer)||trainers[0]):trainers[0];
+
+      let badgeHTML='';
+      if(s.status==='done'){
+        badgeHTML=`<div class="b-badge done" style="background:${trainerObj.color}"></div>`;
+      } else if(wipVal){
+        badgeHTML=`<div class="b-badge wip">…</div>`;
+      } else {
+        badgeHTML=`<div class="b-badge open"></div>`;
+      }
+
+      const metaHTML=s.status==='done'?`<div class="b-meta"><div style="font-size:11px;color:#1E5C47;font-family:'DM Mono',monospace;font-weight:500;">${s.date||''}</div><div style="width:12px;height:12px;border-radius:50%;background:${trainerObj.color};"></div></div>`:'';
+
+      if(subs.length>0){
+        const subsDone=subs.filter((_,si)=>{const sk2=k+'_sub'+si;return state[sk2]&&state[sk2].status==='done';}).length;
+        behaviorsHTML+=`
+          <div class="b-item${isOpenTask?' pending':''}${isSubItem?' sub-item':''}" onclick="toggleExpand('${k}')">
+            ${badgeHTML}
+            <div class="b-label${s.status==='done'?' done':''}">${b} <span style="font-size:10px;color:var(--muted);font-weight:400">(${subsDone}/${subs.length})</span></div>
+            ${metaHTML}
+          </div>
+          <div class="exp-row${isExpanded?' visible':''}" id="exp_${k.replace(/\|/g,'_')}">
+            ${critHTML(b)}`;
+        if(b.startsWith('Kundenfall ')){
+          const halterVal=(state[k+'_kf_halter']||'').replace(/"/g,'&quot;');
+          const tierVal=(state[k+'_kf_tier']||'').replace(/"/g,'&quot;');
+          const zielVal=state[k+'_kf_ziel']||'';
+          behaviorsHTML+=`<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;" onclick="event.stopPropagation()">
+            <div><div style="font-size:10px;font-weight:600;color:var(--light);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;">Vorname Halter/in</div>
+            <input type="text" style="border:1px solid #E0E0E0;border-radius:6px;padding:6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:#FAFAFA;outline:none;width:100%;box-sizing:border-box;" placeholder="Vorname..." value="${halterVal}" onchange="saveKfField('${p.id}',${i},'halter',this.value)"></div>
+            <div><div style="font-size:10px;font-weight:600;color:var(--light);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;">Name des Tieres</div>
+            <input type="text" style="border:1px solid #E0E0E0;border-radius:6px;padding:6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:#FAFAFA;outline:none;width:100%;box-sizing:border-box;" placeholder="Tiername..." value="${tierVal}" onchange="saveKfField('${p.id}',${i},'tier',this.value)"></div>
+            <div><div style="font-size:10px;font-weight:600;color:var(--light);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;">Auftrag / Trainingsziel</div>
+            <textarea class="note-ta" style="border:1px solid #E0E0E0;border-radius:6px;padding:6px 8px;font-size:12px;background:#FAFAFA;min-height:44px;width:100%;box-sizing:border-box;" placeholder="Trainingsziel hier eintragen..." onchange="saveKfField('${p.id}',${i},'ziel',this.value)">${zielVal}</textarea></div>
+          </div>`;
+        }
+        const isInlineGroup=INLINE_CRIT_GROUPS.includes(b);
+        const isTrainingsplan=b.startsWith('Trainingsplan ');
+        const critObj=isInlineGroup&&CRITERIA[b]&&typeof CRITERIA[b]==='object'?CRITERIA[b]:null;
+        subs.forEach((sub,si)=>{
+          const sk2=k+'_sub'+si;
+          const subState=state[sk2];
+          const sd=subState&&subState.status==='done';
+          const subTrainer=sd?(trainers.find(x=>x.id===subState.trainer)||trainers[0]):null;
+          const subColor=subTrainer?subTrainer.color:'';
+          const subDate=sd?subState.date:'';
+          const subDesc=critObj&&critObj.sections&&critObj.sections[si]?critObj.sections[si].text:'';
+          const checkStyle=sd?'background:'+subColor+';border-color:'+subColor+';color:#fff;':isInlineGroup?'border-color:#FB8C00;':'';
+          behaviorsHTML+=`
+            <div class="subtask-item" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">
+              <div class="subtask-check" style="${checkStyle}">${sd?'✓':''}</div>
+              <div style="flex:1">
+                <div class="subtask-label${sd?' done':''}">${si+1}. ${sub}</div>
+                ${subDesc&&!sd?'<div style="font-size:11px;color:#666;margin-top:3px;line-height:1.5;padding-right:8px;">'+subDesc.replace(/\n/g,'<br>')+'</div>':''}
+              </div>
+              ${sd?'<div style="font-size:10px;color:#1E5C47;font-family:monospace;flex-shrink:0;">'+subDate+'</div>':''}
+            </div>`;
+          if(isTrainingsplan&&si===0){
+            const goalVal=state[k+'_goal']||'';
+            behaviorsHTML+=`<div style="padding:4px 0 6px 28px;" onclick="event.stopPropagation()">
+              <textarea class="note-ta" style="border:1px solid #E0E0E0;border-radius:6px;padding:6px 8px;font-size:12px;background:#FAFAFA;min-height:36px;width:100%;box-sizing:border-box;" placeholder="Trainingsziel hier eintragen..." onchange="saveGoal('${p.id}',${i},this.value)">${goalVal}</textarea>
+            </div>`;
+          }
+        });
+        behaviorsHTML+=`
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+              ${s.status==='done'
+                ?`<button class="note-save" style="background:#C62828" onclick="event.stopPropagation();resetBehavior('${p.id}',${i})">✕ Freigabe aufheben</button>`
+                :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleB('${p.id}',${i})">✓ Freigeben</button>`
+              }
+            </div>
+            <div class="note-box" style="margin-top:8px">
+              <div class="note-lbl" style="${noteColor?'color:'+noteColor+';border-left:3px solid '+noteColor+';padding-left:6px;':''}">${noteColor?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>`:''}Trainernotiz (intern) — ${noteTrainer?noteTrainer.name:activeTrainer.name}</div>
+              <textarea class="note-ta" placeholder="Bemerkung..." style="${noteColor?'border-left:3px solid '+noteColor+';padding-left:8px;color:'+noteColor+';':''}" onclick="event.stopPropagation()" onchange="saveNote('${p.id}',${i},this.value)">${noteVal}</textarea>
+              <button class="note-save" onclick="event.stopPropagation();closeExp('${k}')">Speichern ✓</button>
+            </div>
+          </div>`;
+      } else {
+        behaviorsHTML+=`
+          <div class="b-item${isOpenTask?' pending':''}${isSubItem?' sub-item':''}" onclick="toggleExpand('${k}')">
+            ${badgeHTML}
+            <div class="b-label${s.status==='done'?' done':''}${isPH?' ph':''}">${isPH?'(freier Platz)':b}</div>
+            ${metaHTML}
+          </div>
+          <div class="exp-row${isExpanded?' visible':''}" id="exp_${k.replace(/\|/g,'_')}">
+            ${critHTML(b)}
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+              ${s.status==='done'
+                ?`<button class="note-save" style="background:#C62828" onclick="event.stopPropagation();handleB('${p.id}',${i})">✕ Freigabe aufheben</button>`
+                :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleB('${p.id}',${i})">✓ Freigeben</button>`
+              }
+              <label class="wip-check" onclick="event.stopPropagation()">
+                <input type="checkbox" ${wipVal?'checked':''} onchange="toggleWip('${p.id}',${i},this.checked)"> In Bearbeitung
+              </label>
+            </div>
+            <div class="note-box">
+              <div class="note-lbl" style="${noteColor?'color:'+noteColor+';border-left:3px solid '+noteColor+';padding-left:6px;':''}">${noteColor?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>`:''}Trainernotiz (intern) — ${noteTrainer?noteTrainer.name:activeTrainer.name}</div>
+              <textarea class="note-ta" placeholder="Bemerkung..." style="${noteColor?'border-left:3px solid '+noteColor+';padding-left:8px;color:'+noteColor+';':''}" onclick="event.stopPropagation()" onchange="saveNote('${p.id}',${i},this.value)">${noteVal}</textarea>
+              <button class="note-save" onclick="event.stopPropagation();closeExp('${k}')">Speichern ✓</button>
+            </div>
+          </div>`;
+      }
+    });
+
+    const card=document.createElement('div');
+    card.className='p-card';
+    card.innerHTML=`
+      <div class="p-header">
+        <div class="p-info">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${nameHTML}${doneBadge}</div>
+          <div class="p-meta">
+            <span class="p-since">seit ${p.since}</span>
+            ${last?`<div style="width:10px;height:10px;border-radius:50%;background:${last.trainer?last.trainer.color:'#ccc'};flex-shrink:0;" title="Zuletzt: ${last.trainer?last.trainer.name:''} am ${last.date}"></div>`:''}
+          </div>
+          <div style="margin-top:4px"><span class="p-contact-btn" onclick="toggleContact('${p.id}')">👤 Kontakt ${isContact?'▲':'▼'}</span></div>
+        </div>
+        <div class="p-right">
+          <div class="p-pct" style="color:${aColor}">${pct}%</div>
+          <div class="p-progbar"><div class="p-progfill" style="width:${pct}%;background:${aColor}"></div></div>
+          <div class="p-stats-row">
+            <div class="p-stat done">✓ ${pr.done}</div>
+            <div class="p-stat open">◯ ${pr.open}</div>
+          </div>
+        </div>
+        <div class="p-chevron${isOpen?' open':''}" onclick="toggleCard('${p.id}')">▼</div>
+      </div>
+      <div class="contact-wrap${isContact?' visible':''}">
+        <div class="contact-grid">
+          <div class="c-field"><div class="c-label">Telefon</div><input class="c-input" type="tel" placeholder="+49 ..." value="${p.tel}" onchange="saveContact('${p.id}','tel',this.value)"></div>
+          <div class="c-field"><div class="c-label">E-Mail</div><input class="c-input" type="email" placeholder="name@mail.de" value="${p.email}" onchange="saveContact('${p.id}','email',this.value)"></div>
+        </div>
+        <div class="c-field" style="margin-top:8px">
+          <div class="c-label">Tiere</div>
+          ${(p.tiere||[{art:'',name:''}]).map((t,ti)=>`
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+              <input class="c-input" style="flex:1" placeholder="Tierart (z.B. Hund)" value="${t.art}" onchange="saveTier('${p.id}',${ti},'art',this.value)">
+              <input class="c-input" style="flex:1" placeholder="Name" value="${t.name}" onchange="saveTier('${p.id}',${ti},'name',this.value)">
+              ${ti>0?`<span style="cursor:pointer;color:var(--light);font-size:16px;padding:0 4px" onclick="removeTier('${p.id}',${ti})">✕</span>`:''}
+            </div>
+          `).join('')}
+          <button style="font-size:11px;color:#1E5C47;background:none;border:1px dashed var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:2px" onclick="addTier('${p.id}')">+ Tier hinzufügen</button>
+        </div>
+        <div class="c-field" style="margin-top:8px"><div class="c-label">Interne Notiz</div><textarea class="c-note" rows="2" placeholder="z.B. Sonderregelung..." onchange="saveContact('${p.id}','notiz',this.value)">${p.notiz}</textarea></div>
+        <div class="move-bar"><span class="move-label">Verschieben nach:</span>${moveBtns}<button class="move-btn" style="margin-left:auto;color:#C62828;border-color:#FFCDD2;" onclick="deleteP('${p.id}')">🗑 Löschen</button></div>
+      </div>
+      <div class="tasks-wrap${isOpen?' visible':''}">${behaviorsHTML}</div>
+    `;
+    container.appendChild(card);
+    if(isEditing){setTimeout(()=>{const inp=document.getElementById('name_'+p.id);if(inp){inp.focus();inp.select();}},50);}
+  });
+}
+
+function toggleCard(pId){
+  openExpand.clear();
+  if(openCards.has(pId)){
+    openCards.delete(pId);
+    openContact.delete(pId);
+  } else {
+    // Vorherige Karte komplett schließen
+    openCards.clear();
+    openContact.clear();
+    openCards.add(pId);
+  }
+  editingName=null;
+  renderList();
+}
+window.toggleCard=toggleCard;
+function toggleContact(pId){if(openContact.has(pId))openContact.delete(pId);else openContact.add(pId);renderList();}
+window.toggleContact=toggleContact;
+function saveContact(pId,f,v){const p=getP(pId);if(p){p[f]=v;void persistParticipantDetails(pId);}}
+window.saveContact=saveContact;
+function saveTier(pId,ti,field,val){const p=getP(pId);if(p){if(!p.tiere)p.tiere=[{art:'',name:''}];p.tiere[ti][field]=val;void persistParticipantDetails(pId);}}
+window.saveTier=saveTier;
+function addTier(pId){const p=getP(pId);if(p){if(!p.tiere)p.tiere=[{art:'',name:''}];p.tiere.push({art:'',name:''});void persistParticipantDetails(pId);renderList();}}
+window.addTier=addTier;
+function removeTier(pId,ti){const p=getP(pId);if(p&&p.tiere&&p.tiere.length>1){p.tiere.splice(ti,1);void persistParticipantDetails(pId);renderList();}}
+window.removeTier=removeTier;
+function startEditName(e,pId){e.stopPropagation();editingName=pId;renderList();}
+window.startEditName=startEditName;
+function saveName(pId){
+  const inp=document.getElementById('name_'+pId);
+  if(inp){const p=getP(pId);if(p&&inp.value.trim())p.name=inp.value.trim();}
+  editingName=null;void persistParticipantDetails(pId);renderList();
+}
+window.saveName=saveName;
+function deleteP(pId){
+  if(!confirm('Teilnehmer wirklich löschen?'))return;
+  participants=participants.filter(p=>p.id!==pId);
+  openCards.delete(pId);openContact.delete(pId);
+  initTabs();renderList();
+}
+window.deleteP=deleteP;
+function addParticipant(){
+  document.getElementById('participant-modal').classList.add('visible');
+  document.getElementById('participant-name').focus();
+}
+window.addParticipant=addParticipant;
+function closeParticipantForm(){
+  document.getElementById('participant-modal').classList.remove('visible');
+  document.querySelector('.participant-form').reset();
+  document.getElementById('participant-form-error').textContent='';
+}
+window.closeParticipantForm=closeParticipantForm;
+async function createParticipant(event){
+  event.preventDefault();
+  const errorElement=document.getElementById('participant-form-error');
+  const submitButton=event.target.querySelector('button[type="submit"]');
+  submitButton.disabled=true;errorElement.textContent='Speichern läuft...';
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  const response=await fetch(SUPABASE_URL+'/functions/v1/create-participant',{
+    method:'POST',
+    headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
+    body:JSON.stringify({
+      display_name:document.getElementById('participant-name').value.trim(),
+      email:document.getElementById('participant-email').value.trim(),
+      password:document.getElementById('participant-password').value,
+      group:document.getElementById('participant-group').value
+    })
+  });
+  const result=await response.json().catch(()=>({error:'Ungültige Serverantwort'}));
+  submitButton.disabled=false;
+  if(!response.ok){errorElement.textContent=result.error||'Teilnehmer konnte nicht angelegt werden';return;}
+  participants.push({id:result.participant.id,name:result.participant.display_name,group:result.participant.group||'aktiv',since:today(),tel:'',email:result.participant.email,tiere:[{art:'',name:''}],notiz:''});
+  closeParticipantForm();initTabs();renderList();
+}
+window.createParticipant=createParticipant;
+function moveP(pId,group){
+  const p=getP(pId);if(p){p.group=group;openContact.delete(pId);}
+  void persistParticipantDetails(pId);
+  initTabs();renderList();
+}
+window.moveP=moveP;
+function handleB(pId,bIdx){
+  const k=sk(pId,bIdx);
+  const s=state[k]||{status:'open'};
+  if(s.status==='open'){
+    state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+    openExpand.delete(k);
+  } else if(s.status==='done'){
+    delete state[k];
+    openExpand.delete(k);
+  }
+  void persistParticipantProgress(pId);
+  renderList();
+}
+window.handleB=handleB;
+function handleSub(pId,bIdx,si){
+  const k=sk(pId,bIdx)+'_sub'+si;
+  const s=state[k]||{status:'open'};
+  if(s.status==='open')state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+  else delete state[k];
+  const b=BEHAVIORS[bIdx];
+  const subs=SUBTASKS[b]||[];
+  const allDone=subs.every((_,i)=>{const sk2=sk(pId,bIdx)+'_sub'+i;return state[sk2]&&state[sk2].status==='done';});
+  if(allDone){
+    state[sk(pId,bIdx)]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+    openExpand.delete(sk(pId,bIdx)+'_sub');
+  } else{delete state[sk(pId,bIdx)];}
+  void persistParticipantProgress(pId);
+  renderList();
+}
+window.handleSub=handleSub;
+function resetBehavior(pId,bIdx){
+  const k=sk(pId,bIdx);
+  delete state[k];
+  const b=BEHAVIORS[bIdx];
+  const subs=SUBTASKS[b]||[];
+  subs.forEach((_,si)=>{delete state[k+'_sub'+si];});
+  openExpand.delete(k);
+  void persistParticipantProgress(pId);
+  renderList();
+}
+window.resetBehavior=resetBehavior;
+function toggleExpand(k){
+  if(openExpand.has(k))openExpand.delete(k);else openExpand.add(k);
+  renderList();
+}
+window.toggleExpand=toggleExpand;
+function toggleSection(name){
+  if(openSections.has(name))openSections.delete(name);else openSections.add(name);
+  renderList();
+}
+window.toggleSection=toggleSection;
+function toggleSubtasks(k){
+  const key=k+'_sub';
+  if(openExpand.has(key))openExpand.delete(key);else openExpand.add(key);
+  renderList();
+}
+window.toggleSubtasks=toggleSubtasks;
+function toggleWip(pId,bIdx,val){state[sk(pId,bIdx)+'_wip']=val;void persistParticipantProgress(pId);renderList();}
+window.toggleWip=toggleWip;
+function saveNote(pId,bIdx,val){
+  state[sk(pId,bIdx)+'_note']=val;
+  if(val.trim()) state[sk(pId,bIdx)+'_note_trainer']=activeTrainer.id;
+  else delete state[sk(pId,bIdx)+'_note_trainer'];
+  void persistParticipantProgress(pId);
+}
+window.saveNote=saveNote;
+function saveGoal(pId,bIdx,val){state[sk(pId,bIdx)+'_goal']=val;void persistParticipantProgress(pId);}
+window.saveGoal=saveGoal;
+function saveKfField(pId,bIdx,field,val){state[sk(pId,bIdx)+'_kf_'+field]=val;void persistParticipantProgress(pId);}
+window.saveKfField=saveKfField;
+function closeExp(k){openExpand.delete(k);renderList();}
+window.closeExp=closeExp;
+
+function exportExcel(){
+  const header=["Gruppe","Name","Seit","Fortschritt %","Erledigt","Offen",
+    ...BEHAVIORS.map((b,i)=>b.startsWith('__')?'Platz '+(i+1):b)];
+  const rows=[header];
+  participants.forEach(p=>{
+    const pr=getProgress(p.id);
+    const pct=pr.done>0?Math.round((pr.done/pr.total)*100):0;
+    const row=[p.group,p.name,p.since,pct+'%',pr.done,pr.open];
+    BEHAVIORS.forEach((_,i)=>{
+      const k=sk(p.id,i);const s=state[k];
+      if(s&&s.status==='done'){
+        const tr=trainers.find(x=>x.id===s.trainer)||trainers[0];
+        row.push(tr.short+' ('+s.date+')');
+      } else if(state[k+'_wip']){
+        row.push('In Bearbeitung');
+      } else { row.push(''); }
+    });
+    rows.push(row);
+  });
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='Medical-Trainer-'+today()+'.csv';
+  a.click();URL.revokeObjectURL(url);
+}
+window.exportExcel=exportExcel;
+
+initPills();initTabs();renderList();
+</script>
+</body>
+</html>
