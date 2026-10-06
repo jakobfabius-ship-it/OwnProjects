@@ -16,6 +16,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .topbar-title{color:#fff;font-size:15px;font-weight:600}
 .topbar-sub{color:rgba(255,255,255,0.38);font-size:11px;margin-top:1px}
 .trainer-list{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-start;flex:1;min-width:0}
+.admin-inbox-wrap{position:relative;flex-shrink:0}
+.admin-inbox-btn{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid rgba(255,255,255,0.3);border-radius:7px;background:rgba(255,255,255,0.12);color:#fff;font:12px 'DM Sans',sans-serif;cursor:pointer}
+.admin-inbox-count{min-width:18px;height:18px;padding:0 4px;border-radius:99px;background:#C2185B;color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.admin-inbox-count[hidden]{display:none}
+.admin-inbox-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,calc(100vw - 28px));max-height:65vh;overflow:auto;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.18);z-index:200}
+.admin-inbox-panel[hidden]{display:none}
+.admin-inbox-header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border-bottom:1px solid var(--border);font-size:13px;font-weight:600}
+.admin-inbox-close{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 5px}
+.admin-inbox-list{padding:6px 10px}
+.admin-inbox-item{padding:9px 8px;border-bottom:1px solid var(--border)}
+.admin-inbox-item.unread{background:#F5F1FA}
+.admin-inbox-participant{font-size:12px;font-weight:600}
+.admin-inbox-message{font-size:12px;line-height:1.4;margin-top:3px}
+.admin-inbox-meta{font-size:10px;color:var(--muted);margin-top:4px}
+.admin-inbox-delete{margin-top:5px;padding:3px 0;border:0;background:transparent;color:#A32626;font:11px 'DM Sans',sans-serif;text-decoration:underline;cursor:pointer}
+.admin-inbox-empty{padding:14px 10px;color:var(--muted);font-size:12px}
 .t-pill{display:flex;align-items:center;gap:5px;padding:2px 0}
 .t-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
 .t-name{font-size:11px;color:rgba(255,255,255,0.75);font-weight:500}
@@ -81,6 +97,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .b-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;border:1px solid var(--border);background:#fff;margin-bottom:5px;cursor:pointer;transition:background 0.12s}
 .b-item.category{background:#E8F5F0;border-color:#1E5C47;border-left:4px solid #1E5C47;cursor:default;pointer-events:none}
 .b-item.category .b-label{font-weight:600;color:#1E5C47}
+.b-item.category.category-info-row{pointer-events:auto}
+.category-info-btn{width:22px;height:22px;border:1px solid #7FB5A0;border-radius:50%;background:#fff;color:#1E5C47;font-size:12px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .b-item.category-gray{background:#F1EFE8;border-color:#B8B5AD;border-left:4px solid #B8B5AD;cursor:default;pointer-events:none}
 .b-item.category-gray .b-label{font-weight:600;color:#7A7870}
 .b-item.sub-category{background:#F0F7F4;border-color:#7FB5A0;border-left:4px solid #7FB5A0;cursor:pointer;}
@@ -116,6 +134,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .wip-check input{accent-color:#E53935;width:14px;height:14px}
 .note-box{background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--border)}
 .note-lbl{font-size:10px;color:var(--light);margin-bottom:4px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.trainer-note-entry{border-left:3px solid;padding:4px 0 4px 8px;margin-bottom:8px}
+.trainer-note-entry-meta{font-size:10px;font-weight:600;margin-bottom:3px}
+.trainer-note-entry-text{font-size:12px;line-height:1.5}
 .note-ta{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);resize:none;outline:none;min-height:44px;line-height:1.5}
 .note-save{margin-top:5px;padding:5px 11px;background:#1A1A18;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .crit-box{background:#F0F9F5;border-radius:8px;padding:10px 12px;border:1px solid #A8D5C2;margin-bottom:8px;}
@@ -123,6 +144,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .crit-text{font-size:12px;color:#1A1A18;line-height:1.7;}
 .crit-section{margin-top:9px;padding-top:8px;border-top:1px solid #C8E8DC;}
 .crit-section-title{font-size:11px;font-weight:700;color:#1E5C47;margin-bottom:3px;}
+.task-subpoints{display:flex;flex-direction:column;gap:4px;margin:0 0 10px 12px}
 .legend{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:16px}
 .leg-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--light);margin-bottom:10px}
 .leg-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px;color:var(--muted)}
@@ -156,8 +178,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .participant-form-actions button{padding:8px 12px;border-radius:7px;border:1px solid var(--border);cursor:pointer;font:12px 'DM Sans',sans-serif}
 .participant-form-actions .primary{background:#1E5C47;color:#fff;border-color:#1E5C47}
 .participant-form-error{min-height:16px;color:#C62828;font-size:11px;margin-top:8px}
-body.participant-mode .trainer-list,body.participant-mode .toolbar,body.participant-mode .tabs,body.participant-mode .legend{display:none}
-body.participant-mode .p-contact-btn,body.participant-mode .contact-wrap,body.participant-mode .move-bar{display:none}
+body.participant-mode .toolbar,body.participant-mode .tabs{display:none}
+body.participant-mode .admin-inbox-wrap{display:none}
+body.participant-mode .move-bar{display:none}
+body.participant-mode .contact-wrap input,body.participant-mode .contact-wrap textarea{background:#F5F5F5}
 body.participant-mode .p-name{pointer-events:none;border-bottom:none;cursor:default}
 body.participant-mode .tasks-wrap .note-save,body.participant-mode .tasks-wrap .wip-check{display:none}
 body.participant-mode .tasks-wrap .note-box{display:none}
@@ -213,6 +237,13 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
       <div class="topbar-sub">Ausbildungsstand — Demo</div>
     </div>
     <div class="trainer-list" id="trainer-pills" aria-label="Trainer"></div>
+    <div class="admin-inbox-wrap">
+      <button id="admin-inbox-button" class="admin-inbox-btn" type="button" aria-expanded="false" aria-controls="admin-inbox-panel" onclick="toggleAdminInbox()">✉ Postfach<span id="admin-inbox-count" class="admin-inbox-count" hidden></span></button>
+      <div id="admin-inbox-panel" class="admin-inbox-panel" hidden>
+        <div class="admin-inbox-header"><span>Postfach</span><button class="admin-inbox-close" type="button" aria-label="Postfach schließen" onclick="toggleAdminInbox()">×</button></div>
+        <div id="admin-inbox-list" class="admin-inbox-list"><div class="admin-inbox-empty">Noch keine Nachrichten.</div></div>
+      </div>
+    </div>
     <button onclick="doLogout()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;flex-shrink:0;">Abmelden</button>
   </div>
 </div>
@@ -235,8 +266,7 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <div class="leg-row"><div class="ampel done-amp" style="width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>Blau — Abgeschlossen</div>
     <div class="leg-row"><div class="leg-badge" style="background:#F5F5F5;border:1.5px solid #E0E0E0;"></div>Offen</div>
     <div class="leg-row"><div class="leg-badge" style="background:#FFF8E1;border:1.5px solid #FFD54F;color:#F57F17;font-size:10px;">…</div>In Bearbeitung</div>
-    <div class="leg-row"><div class="leg-badge" style="background:#E53935;color:#fff;font-size:9px;">T1</div>Freigegeben mit Trainer-Kürzel</div>
-    <div class="tip">💡 Oben werden die vier Trainer angezeigt. Dein Admin-Konto bestimmt, welcher Trainer bei Freigaben eingetragen wird.<br>💡 Teilnehmernamen antippen zum Umbenennen<br>💡 👤 für Kontaktdaten · Gruppe wechseln per Knopf in Kontaktdaten</div>
+    <div class="leg-row"><div id="legend-trainer-badge" class="leg-badge"></div>Aufgabe Abgeschlossen</div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -252,6 +282,7 @@ console.log('✅ Supabase verbunden:', SUPABASE_URL);
 
 let authTimer;
 let passwordRecoveryMode=false;
+let adminInboxChannel=null;
 function showLogin(message='') {
   passwordRecoveryMode=false;
   document.getElementById('pw-overlay').style.display='flex';
@@ -332,6 +363,10 @@ window.checkPw=async function(){
 
 window.doLogout=async function(){
   clearTimeout(authTimer);
+  if(adminInboxChannel){
+    void supabaseClient.removeChannel(adminInboxChannel);
+    adminInboxChannel=null;
+  }
   passwordRecoveryMode=false;
   await supabaseClient.auth.signOut();
   showLogin();
@@ -360,8 +395,22 @@ async function loadUserProfile(){
     showApp();
     document.body.classList.add('participant-mode');
     document.querySelector('.topbar-sub').textContent='Mein Ausbildungsstand — '+profile.display_name;
+    await loadAdminDirectory();
     await loadOwnParticipantData(user.id);
   }
+}
+
+async function loadAdminDirectory(){
+  const {data,error}=await supabaseClient.rpc('get_admin_trainers');
+  if(error){console.warn('Admin-Namen konnten nicht geladen werden:',error.message);initPills();return;}
+  (data||[]).forEach(profile=>{
+    const trainer=trainers.find(item=>item.id===Number(profile.trainer_id));
+    if(!trainer||!profile.display_name)return;
+    trainer.name=profile.display_name;
+    trainer.short=profile.display_name.split(' ').map(word=>word[0]).join('').slice(0,2).toUpperCase();
+    trainer.color=COLORS[Number(profile.trainer_id)-1];
+  });
+  initPills();
 }
 
 async function loadTrainerProfiles(currentTrainerId,currentDisplayName){
@@ -372,6 +421,7 @@ async function loadTrainerProfiles(currentTrainerId,currentDisplayName){
     if(trainer&&profile.display_name){
       trainer.name=profile.display_name;
       trainer.short=profile.display_name.split(' ').map(word=>word[0]).join('').slice(0,2).toUpperCase();
+      trainer.color=COLORS[Number(profile.trainer_id)-1];
     }
   });
   const trainer=trainers.find(item=>item.id===Number(currentTrainerId))||trainers[0];
@@ -379,31 +429,36 @@ async function loadTrainerProfiles(currentTrainerId,currentDisplayName){
   trainer.short=trainer.name.split(' ').map(word=>word[0]).join('').slice(0,2).toUpperCase();
   activeTrainer=trainer;
   initPills();
+  subscribeAdminInbox();
+  await loadAdminInbox();
 }
 
 async function loadParticipantsFromDatabase(){
-  const [{data,error},{data:progressRows, error:progressError},{data:noteRows,error:noteError}]=await Promise.all([
+  const [{data,error},{data:progressRows, error:progressError},{data:noteRows,error:noteError},{data:lastEditorRows,error:lastEditorError}]=await Promise.all([
     supabaseClient.from('participants').select('id,display_name,email,phone,notes,participant_group,animals,created_at').order('created_at'),
     supabaseClient.from('participant_progress').select('participant_id,state'),
-    supabaseClient.from('participant_admin_notes').select('participant_id,state')
+    supabaseClient.from('participant_admin_notes').select('participant_id,state'),
+    supabaseClient.from('participants').select('id,last_changed_by_trainer_id')
   ]);
   if(error||progressError||noteError){console.warn('Teilnehmer konnten nicht geladen werden:',error?.message||progressError?.message||noteError?.message);return;}
+  if(lastEditorError)console.warn('Letzter bearbeitender Admin konnte nicht geladen werden:',lastEditorError.message);
   if(!data.length)return;
   state={};
   const progressByParticipant=new Map((progressRows||[]).map(row=>[row.participant_id,row.state||{}]));
   const notesByParticipant=new Map((noteRows||[]).map(row=>[row.participant_id,row.state||{}]));
+  const lastEditorByParticipant=new Map((lastEditorRows||[]).map(row=>[row.id,row.last_changed_by_trainer_id]));
   (progressRows||[]).forEach(row=>Object.assign(state,row.state||{}));
   (noteRows||[]).forEach(row=>Object.assign(state,row.state||{}));
   participants=data.map(p=>{
     const saved=progressByParticipant.get(p.id)||{};
-    return {id:p.id,name:p.display_name,group:p.participant_group||'aktiv',since:new Date(p.created_at).toLocaleDateString('de-DE'),tel:p.phone||'',email:p.email,tiere:p.animals?.length?p.animals:[{art:'',name:''}],notiz:p.notes||''};
+    return {id:p.id,name:p.display_name,group:p.participant_group||'aktiv',since:new Date(p.created_at).toLocaleDateString('de-DE'),createdAt:p.created_at,tel:p.phone||'',email:p.email,tiere:p.animals?.length?p.animals:[{art:'',name:''}],notiz:p.notes||'',lastChangedByTrainerId:lastEditorByParticipant.get(p.id)||null};
   });
   initTabs();renderList();
 }
 
 async function loadOwnParticipantData(userId){
   const [{data:participant,error:participantError},{data:progress,error:progressError}]=await Promise.all([
-    supabaseClient.from('participants').select('id,display_name,email,phone,notes,participant_group,animals,created_at').eq('id',userId).maybeSingle(),
+    supabaseClient.rpc('get_own_participant_contact'),
     supabaseClient.from('participant_progress').select('state').eq('participant_id',userId).maybeSingle()
   ]);
   if(participantError||progressError){
@@ -413,21 +468,21 @@ async function loadOwnParticipantData(userId){
   if(!participant){showLogin('Teilnehmerdatensatz nicht gefunden.');return;}
   const savedState=progress?.state||{};
   Object.keys(savedState).forEach(key=>{
-    if(key.endsWith('_note')||key.endsWith('_note_trainer')||key.endsWith('_goal')||key.includes('_kf_'))delete savedState[key];
+    if(key.endsWith('_note')||key.endsWith('_note_trainer')||key.endsWith('_note_entries')||key.endsWith('_goal')||key.includes('_kf_'))delete savedState[key];
   });
   activeGroup=participant.participant_group||'aktiv';
   state=savedState;
-  participants=[{id:participant.id,name:participant.display_name,group:activeGroup,since:new Date(participant.created_at).toLocaleDateString('de-DE'),tel:participant.phone||'',email:participant.email,tiere:participant.animals?.length?participant.animals:[{art:'',name:''}],notiz:participant.notes||''}];
+  participants=[{id:participant.id,name:participant.display_name,group:activeGroup,since:new Date(participant.created_at).toLocaleDateString('de-DE'),createdAt:participant.created_at,tel:participant.phone||'',email:participant.email,tiere:participant.animals?.length?participant.animals:[{art:'',name:''}],notiz:''}];
   initTabs();renderList();
 }
 
-async function persistParticipantProgress(participantId){
+async function persistParticipantProgress(participantId,notificationMessage='hat den Ausbildungsstand aktualisiert.'){
   if(document.body.classList.contains('participant-mode'))return;
   const participantState={};
   const privateNotes={};
   Object.keys(state).forEach(key=>{
     if(!key.startsWith(participantId+'|'))return;
-    if(key.endsWith('_note')||key.endsWith('_note_trainer'))privateNotes[key]=state[key];
+    if(key.endsWith('_note')||key.endsWith('_note_trainer')||key.endsWith('_note_entries'))privateNotes[key]=state[key];
     else participantState[key]=state[key];
   });
   const {error}=await supabaseClient.from('participant_progress').upsert({
@@ -442,12 +497,50 @@ async function persistParticipantProgress(participantId){
     updated_at:new Date().toISOString()
   });
   if(notesError)console.warn('Trainernotizen konnten nicht gespeichert werden:',notesError.message);
+  if(!error&&!notesError){
+    await saveLastAdminEditor(participantId);
+    void notifyOtherAdmins(participantId,notificationMessage);
+  }
+}
+
+function updateLastAdminDot(participantId,trainerId){
+  const participant=getP(participantId);
+  if(participant)participant.lastChangedByTrainerId=Number(trainerId);
+  const trainer=trainers.find(item=>item.id===Number(trainerId));
+  const dot=document.getElementById('last-admin-dot-'+participantId);
+  if(dot&&trainer){
+    dot.style.background=trainer.color;
+    dot.title='Zuletzt geändert von '+trainer.name;
+  }
+}
+
+async function saveLastAdminEditor(participantId){
+  const {error}=await supabaseClient.from('participants')
+    .update({last_changed_by_trainer_id:activeTrainer.id})
+    .eq('id',participantId);
+  if(error){console.warn('Letzter bearbeitender Admin konnte nicht gespeichert werden:',error.message);return;}
+  updateLastAdminDot(participantId,activeTrainer.id);
 }
 
 async function persistParticipantDetails(participantId){
-  if(document.body.classList.contains('participant-mode'))return;
   const participant=getP(participantId);
   if(!participant)return;
+  if(document.body.classList.contains('participant-mode')){
+    setParticipantContactSaveStatus(participantId,'Wird gespeichert...');
+    try{
+      const {error}=await supabaseClient.rpc('update_own_participant_contact',{
+        p_phone:participant.tel||null,
+        p_email:participant.email,
+        p_animals:participant.tiere||[]
+      });
+      if(error)throw error;
+      setParticipantContactSaveStatus(participantId,'Gespeichert');
+    }catch(error){
+      setParticipantContactSaveStatus(participantId,'Speichern fehlgeschlagen. Bitte erneut versuchen.');
+      console.warn('Eigene Kontaktdaten konnten nicht gespeichert werden:',error?.message||error);
+    }
+    return;
+  }
   const {error}=await supabaseClient.from('participants').update({
     display_name:participant.name,
     phone:participant.tel||null,
@@ -458,7 +551,96 @@ async function persistParticipantDetails(participantId){
     updated_at:new Date().toISOString()
   }).eq('id',participantId);
   if(error)console.warn('Teilnehmerdaten konnten nicht gespeichert werden:',error.message);
+  else{
+    await saveLastAdminEditor(participantId);
+    void notifyOtherAdmins(participantId,'hat Teilnehmerdaten aktualisiert.');
+  }
 }
+
+async function notifyOtherAdmins(participantId,message,participantName){
+  if(document.body.classList.contains('participant-mode'))return;
+  const participant=getP(participantId);
+  const name=participantName||(participant&&participant.name);
+  const recipients=trainers;
+  if(!name||!recipients.length)return;
+  const notifications=recipients.map(trainer=>({
+    recipient_trainer_id:trainer.id,
+    actor_trainer_id:activeTrainer.id,
+    actor_name:activeTrainer.name,
+    participant_id:participantId,
+    participant_name:name,
+    message
+  }));
+  const {error}=await supabaseClient.from('admin_notifications').insert(notifications);
+  if(error)console.warn('Admin-Benachrichtigungen konnten nicht gespeichert werden:',error.message);
+}
+
+async function loadAdminInbox(){
+  if(document.body.classList.contains('participant-mode'))return;
+  const {data,error}=await supabaseClient.from('admin_notifications')
+    .select('id,actor_name,participant_name,message,created_at,read_at')
+    .eq('recipient_trainer_id',activeTrainer.id)
+    .order('created_at',{ascending:false})
+    .limit(50);
+  if(error){console.warn('Admin-Postfach konnte nicht geladen werden:',error.message);return;}
+  adminInboxNotifications=data||[];
+  renderAdminInbox();
+}
+
+function subscribeAdminInbox(){
+  if(adminInboxChannel)void supabaseClient.removeChannel(adminInboxChannel);
+  const trainerId=activeTrainer.id;
+  adminInboxChannel=supabaseClient.channel('admin-inbox-'+trainerId)
+    .on('postgres_changes',{
+      event:'INSERT',
+      schema:'public',
+      table:'admin_notifications',
+      filter:'recipient_trainer_id=eq.'+trainerId
+    },()=>{void loadAdminInbox();})
+    .subscribe();
+}
+
+function renderAdminInbox(){
+  const list=document.getElementById('admin-inbox-list');
+  const count=document.getElementById('admin-inbox-count');
+  if(!list||!count)return;
+  const unreadCount=adminInboxNotifications.filter(notification=>!notification.read_at).length;
+  count.textContent=unreadCount>99?'99+':String(unreadCount);
+  count.hidden=unreadCount===0;
+  if(!adminInboxNotifications.length){
+    list.innerHTML='<div class="admin-inbox-empty">Noch keine Nachrichten.</div>';
+    return;
+  }
+  list.innerHTML=adminInboxNotifications.map(notification=>{
+    const createdAt=new Date(notification.created_at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    return`<article class="admin-inbox-item${notification.read_at?'':' unread'}">
+      <div class="admin-inbox-participant">${escapeNoteHTML(notification.participant_name)}</div>
+      <div class="admin-inbox-message">${escapeNoteHTML(notification.message)}</div>
+      <div class="admin-inbox-meta">${escapeNoteHTML(notification.actor_name)} · ${escapeNoteHTML(createdAt)}</div>
+      <button class="admin-inbox-delete" type="button" onclick="deleteAdminNotification(${Number(notification.id)})">Nachricht löschen</button>
+    </article>`;
+  }).join('');
+}
+
+function toggleAdminInbox(){
+  const panel=document.getElementById('admin-inbox-panel');
+  const button=document.getElementById('admin-inbox-button');
+  if(!panel||!button)return;
+  panel.hidden=!panel.hidden;
+  button.setAttribute('aria-expanded',String(!panel.hidden));
+  if(!panel.hidden)void loadAdminInbox();
+}
+window.toggleAdminInbox=toggleAdminInbox;
+
+async function deleteAdminNotification(notificationId){
+  const {error}=await supabaseClient.from('admin_notifications')
+    .delete()
+    .eq('id',notificationId)
+    .eq('recipient_trainer_id',activeTrainer.id);
+  if(error){console.warn('Nachricht konnte nicht gelöscht werden:',error.message);return;}
+  await loadAdminInbox();
+}
+window.deleteAdminNotification=deleteAdminNotification;
 
 async function initializeAuth(){
   const recoveryUrl=new URL(window.location.href);
@@ -501,8 +683,7 @@ async function testSupabaseConnection() {
 testSupabaseConnection();
 initializeAuth();
 
-const COLORS=['#E53935','#43A047','#1E88E5','#E91E8C'];
-const TRAINER_COLORS_BG=['#FFEBEE','#E8F5E9','#E3F2FD','#FCE4EC'];
+const COLORS=['#baa3e6','#c9a653','#64f516','#f725ed'];
 let trainers=[
   {id:1,name:'Trainer 1',short:'T1',color:COLORS[0]},
   {id:2,name:'Trainer 2',short:'T2',color:COLORS[1]},
@@ -514,9 +695,9 @@ const SUBTASKS={
   'Trainingsplan 1':['Trainingsziel formuliert','Ausgangspunkt bestimmt','Trainingschritte formuliert','Praktische Umsetzung'],
   'Trainingsplan 2':['Trainingsziel formuliert','Ausgangspunkt bestimmt','Trainingschritte formuliert','Praktische Umsetzung'],
   'Trainingsplan 3':['Trainingsziel formuliert','Ausgangspunkt bestimmt','Trainingschritte formuliert','Praktische Umsetzung'],
-  'Kundenfall 1':['Trainingsplan erstellt','Verlauf des Trainings'],
-  'Kundenfall 2':['Trainingsplan erstellt','Verlauf des Trainings'],
-  'Kundenfall 3':['Trainingsplan erstellt','Verlauf des Trainings'],
+  'Kundenfall 1':['Trainingsplan erstellt','Praktische Umsetzung'],
+  'Kundenfall 2':['Trainingsplan erstellt','Praktische Umsetzung'],
+  'Kundenfall 3':['Trainingsplan erstellt','Praktische Umsetzung'],
   'Boden-Target':['Positive Ablenkung','Dauer'],
   'Kinn-Target / Hinterkopf-Target (Katze)':['Positive Ablenkung','Dauer'],
   'Seitenlage / Brust-Bauch-Lage (Katze)':['Positive Ablenkung','Dauer'],
@@ -614,7 +795,7 @@ const CRITERIA={
     main:'Die Aufgaben sollen jeweils an einer Vorder- und einer Hinterpfote durchgeführt werden.',
     sections:[
       {title:'Pfoten untersuchen',text:'Du kannst die Pfoten deines Tieres von allen Seiten untersuchen. Hierbei kannst du auch mit den Fingern zwischen die Zehen und Ballen gehen und die Strukturen durchtasten.\nDu kannst außerdem die Pfoten mit drei verschiedenen Gegenständen berühren.'},
-      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:\n– alle Krallen einzeln fixieren\n– Berühren aller Krallen mit dem Werkzeug\n– Schneidegeräusch mittels Holzstäbchen, Nudel oder Zahnstocher bzw. das Geräusch und die Vibration des Krallenschleifers simulieren'},
+      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:',subpoints:['Alle Krallen einzeln fixieren','Berühren aller Krallen mit dem Werkzeug','Schneidegeräusch mittels Holzstäbchen, Nudel oder Zahnstocher bzw. das Geräusch und die Vibration des Krallenschleifers simulieren']},
       {title:'Verband anlegen',text:'Du kannst deinem Tier einen Verband fachgerecht anlegen. Dabei muss in jeden Zwischenzehenspalt und um die komplette Pfote Verbandswatte gelegt werden. Anschließend wird die Pfote mit einer selbsthaftenden Binde umwickelt.'},
       {title:'Pfotenschutz tragen',text:'Du kannst deinem Tier eine Socke oder einen Pfotenschuh anziehen. Dein Tier kann damit ein paar Schritte laufen. (In jedem Durchgang nur an einer Pfote)'},
     ]
@@ -708,7 +889,6 @@ const BEHAVIORS=[
   'Abläufe in der Tierarztpraxis',
   'Strategien für Notfälle',
   'Ausarbeitung eines Themas zur Veröffentlichung',
-  ...Array.from({length:4},(_,i)=>'__'+i),
 ];
 
 const CAT_ITEMS=['Basics','Kopf','Pfoten_grp','Fellpflege_grp','Blutentnahme_grp','Verschiedenes'];
@@ -725,6 +905,7 @@ let participants=[
 
 let activeTrainer=trainers[0];
 let activeGroup='aktiv';
+let adminInboxNotifications=[];
 let openCards=new Set();
 let openContact=new Set();
 let openExpand=new Set();
@@ -735,6 +916,37 @@ let filterQ='';
 let sortMode='date';
 
 function today(){const d=new Date();return d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear();}
+function dateToInput(value){
+  const match=/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(String(value||''));
+  return match?`${match[3]}-${match[2].padStart(2,'0')}-${match[1].padStart(2,'0')}`:'';
+}
+function participantCreatedDateInput(participant){
+  return participant.createdAt?dateToInput(new Date(participant.createdAt).toLocaleDateString('de-DE')):dateToInput(participant.since);
+}
+async function saveParticipantCreationDate(participantId,value){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value||''))return;
+  const participant=getP(participantId);
+  if(!participant)return;
+  const createdAt=new Date(`${value}T00:00:00`).toISOString();
+  const {error}=await supabaseClient.from('participants').update({created_at:createdAt}).eq('id',participantId);
+  if(error){console.warn('Teilnehmer-Erstellungsdatum konnte nicht gespeichert werden:',error.message);renderList();return;}
+  participant.createdAt=createdAt;
+  participant.since=new Date(createdAt).toLocaleDateString('de-DE');
+  await saveLastAdminEditor(participantId);
+  void notifyOtherAdmins(participantId,'hat das Erstellungsdatum angepasst.');
+  renderList();
+}
+function setCompletionDate(participantId,key,value){
+  const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(value||'');
+  const entry=state[key];
+  if(!match||!entry||entry.status!=='done')return;
+  entry.date=`${match[3]}.${match[2]}.${match[1]}`;
+  void persistParticipantProgress(participantId);
+}
+function completionDateHTML(participantId,key,value,isParticipantMode){
+  if(isParticipantMode)return`<span class="b-date">${escapeNoteHTML(value||'')}</span>`;
+  return`<input type="date" aria-label="Freigabedatum ändern" value="${dateToInput(value)}" style="width:112px;border:0;background:transparent;color:#1E5C47;font:11px 'DM Mono',monospace" onclick="event.stopPropagation()" onchange="setCompletionDate('${participantId}','${key}',this.value)">`;
+}
 function sk(pId,bIdx){return pId+'|'+bIdx;}
 function getP(pId){return participants.find(p=>p.id===pId);}
 
@@ -742,8 +954,18 @@ function getProgress(pId){
   let done=0,wip=0,total=0;
   BEHAVIORS.forEach((b,i)=>{
     if(b.startsWith('__')||CAT_ITEMS.includes(b)||SUB_CAT_ITEMS.includes(b))return;
-    total++;
     const k=sk(pId,i);
+    if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
+      const subs=SUBTASKS[b]||[];
+      total+=subs.length;
+      subs.forEach((_,si)=>{
+        const subKey=k+'_sub'+si;
+        if(state[subKey]&&state[subKey].status==='done')done++;
+        else if(state[subKey+'_wip'])wip++;
+      });
+      return;
+    }
+    total++;
     if(state[k]&&state[k].status==='done')done++;
     else if(state[k+'_wip'])wip++;
   });
@@ -752,12 +974,12 @@ function getProgress(pId){
 
 function getLastEntry(pId){
   let last=null;
-  BEHAVIORS.forEach((_,i)=>{
+  BEHAVIORS.forEach((b,i)=>{
     const k=sk(pId,i);
-    const s=state[k];
-    if(s&&s.status==='done'&&s.date){
-      if(!last||s.ts>last.ts)last={date:s.date,trainer:trainers.find(t=>t.id===s.trainer),ts:s.ts||0};
-    }
+    const entries=b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'?(SUBTASKS[b]||[]).map((_,si)=>state[k+'_sub'+si]):[state[k]];
+    entries.forEach(s=>{
+      if(s&&s.status==='done'&&s.date&&(!last||s.ts>last.ts))last={date:s.date,trainer:trainers.find(t=>t.id===s.trainer),ts:s.ts||0};
+    });
   });
   return last;
 }
@@ -778,6 +1000,10 @@ function ampelColor(pct,group){
 function initPills(){
   const wrap=document.getElementById('trainer-pills');
   wrap.innerHTML='';
+  const legendTrainerBadge=document.getElementById('legend-trainer-badge');
+  if(legendTrainerBadge){
+    legendTrainerBadge.style.background=trainers[0].color;
+  }
   trainers.forEach(t=>{
     const pill=document.createElement('div');
     pill.className='t-pill';
@@ -850,6 +1076,7 @@ function renderList(){
   const container=document.getElementById('list-container');
   container.innerHTML='';
 
+  const isParticipantMode=document.body.classList.contains('participant-mode');
   list.forEach(p=>{
     const pr=getProgress(p.id);
     const pct=pr.done>0?Math.round((pr.done/pr.total)*100):0;
@@ -857,8 +1084,15 @@ function renderList(){
     const isContact=openContact.has(p.id);
     const isEditing=editingName===p.id;
     const last=getLastEntry(p.id);
+    const lastAdmin=trainers.find(trainer=>trainer.id===Number(p.lastChangedByTrainerId))||last?.trainer;
     const aColor=ampelColor(pct,p.group);
     const isDone=p.group==='abgeschlossen';
+    const telContactAttrs=isParticipantMode
+      ?`oninput="saveContact('${p.id}','tel',this.value)" onblur="flushParticipantDetails('${p.id}')"`
+      :`onchange="saveContact('${p.id}','tel',this.value)"`;
+    const emailContactAttrs=isParticipantMode
+      ?`oninput="saveContact('${p.id}','email',this.value)" onblur="flushParticipantDetails('${p.id}')"`
+      :`onchange="saveContact('${p.id}','email',this.value)"`;
 
     let nameHTML=isEditing
       ?`<input class="p-name-input" id="name_${p.id}" value="${p.name}" onblur="saveName('${p.id}')" onkeydown="if(event.key==='Enter')saveName('${p.id}')" onclick="event.stopPropagation()">`
@@ -878,10 +1112,8 @@ function renderList(){
     BEHAVIORS.forEach((b,i)=>{
       const k=sk(p.id,i);
       const s=state[k]||{status:'open'};
-      const noteVal=state[k+'_note']||'';
-      const noteTrainerId=state[k+'_note_trainer'];
-      const noteTrainer=noteTrainerId?trainers.find(t=>t.id===noteTrainerId):null;
-      const noteColor=noteTrainer?noteTrainer.color:activeTrainer.color;
+      const noteEntriesHTML=trainerNoteEntriesHTML(k);
+      const noteColor=activeTrainer.color;
       const wipVal=state[k+'_wip']||false;
       const isExpanded=openExpand.has(k);
       const isPH=b.startsWith('__');
@@ -892,7 +1124,14 @@ function renderList(){
       if(isCat){
         currentSection=null;
         const catLabel=b.endsWith('_grp')?b.replace('_grp',''):b;
-        behaviorsHTML+=`<div class="b-item category"><div class="b-label">${catLabel}</div></div>`;
+        if(b==='Pfoten_grp'||b==='Blutentnahme_grp'){
+          const criterion=CRITERIA[catLabel].main;
+          const infoKey='category-info-'+b+'-'+p.id;
+          const infoOpen=openExpand.has(infoKey);
+          behaviorsHTML+=`<div class="b-item category category-info-row"><div class="b-label">${catLabel}</div><button class="category-info-btn" type="button" aria-label="${catLabel}-Hinweis anzeigen" aria-expanded="${infoOpen}" title="${catLabel}-Hinweis" onclick="event.stopPropagation();toggleExpand('${infoKey}')">i</button></div>${infoOpen?`<div class="crit-box"><div class="crit-lbl">📋 Hinweis</div><div class="crit-text">${criterion.replace(/\n/g,'<br>')}</div></div>`:''}`;
+        } else {
+          behaviorsHTML+=`<div class="b-item category"><div class="b-label">${catLabel}</div></div>`;
+        }
         return;
       }
       if(isSubCat){
@@ -918,7 +1157,63 @@ function renderList(){
         badgeHTML=`<div class="b-badge open"></div>`;
       }
 
-      const metaHTML=s.status==='done'?`<div class="b-meta"><div style="font-size:11px;color:#1E5C47;font-family:'DM Mono',monospace;font-weight:500;">${s.date||''}</div><div style="width:12px;height:12px;border-radius:50%;background:${trainerObj.color};"></div></div>`:'';
+      const taskNoteDots=trainerNoteDotsHTML(k);
+      const metaHTML=s.status==='done'||taskNoteDots?`<div class="b-meta">${s.status==='done'?completionDateHTML(p.id,k,s.date,isParticipantMode):''}${taskNoteDots}</div>`:'';
+
+      if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
+        const sections=CRITERIA[b].sections||[];
+        subs.forEach((sub,si)=>{
+          const subKey=k+'_sub'+si;
+          const subState=state[subKey];
+          const subDone=subState&&subState.status==='done';
+          const subWip=Boolean(state[subKey+'_wip']);
+          const subExpanded=openExpand.has(subKey);
+          const subTrainer=subDone?(trainers.find(x=>x.id===subState.trainer)||trainers[0]):null;
+          const subColor=subTrainer?subTrainer.color:'';
+          const subDesc=sections[si]?sections[si].text:'';
+          const subpoints=sections[si]&&sections[si].subpoints?sections[si].subpoints:[];
+          const subpointsDone=subpoints.filter((_,pi)=>state[subKey+'_point'+pi]&&state[subKey+'_point'+pi].status==='done').length;
+          const subpointsHTML=subpoints.map((point,pi)=>{
+            const pointKey=subKey+'_point'+pi;
+            const pointState=state[pointKey];
+            const pointDone=pointState&&pointState.status==='done';
+            return `<div class="subtask-item" onclick="event.stopPropagation();handleSubPoint('${p.id}',${i},${si},${pi})">
+              <div class="subtask-check${pointDone?' done':''}">${pointDone?'✓':''}</div>
+              <div class="subtask-label${pointDone?' done':''}">${pi+1}. ${point}</div>
+            </div>`;
+          }).join('');
+          const subNoteEntriesHTML=trainerNoteEntriesHTML(subKey);
+          const subNoteDots=trainerNoteDotsHTML(subKey);
+          const subNoteColor=activeTrainer.color;
+          const subBadge=subDone
+            ?`<div class="b-badge done" style="background:${subColor}"></div>`
+            :subWip?'<div class="b-badge wip">…</div>':'<div class="b-badge open"></div>';
+          behaviorsHTML+=`
+            <div class="b-item${subDone?'':' pending'}" onclick="toggleExpand('${subKey}')">
+              ${subBadge}
+              <div class="b-label${subDone?' done':''}">${sub}${subpoints.length?` <span style="font-size:10px;color:var(--muted);font-weight:400">(${subpointsDone}/${subpoints.length})</span>`:''}</div>
+              ${subDone||subNoteDots?`<div class="b-meta">${subDone?completionDateHTML(p.id,subKey,subState.date,isParticipantMode):''}${subNoteDots}</div>`:''}
+            </div>
+            <div class="exp-row${subExpanded?' visible':''}" id="exp_${subKey.replace(/\|/g,'_')}">
+              <div class="crit-box"><div class="crit-lbl">📋 Kriterium</div><div class="crit-text">${subDesc.replace(/\n/g,'<br>')}</div></div>
+              ${subpointsHTML?`<div class="task-subpoints">${subpointsHTML}</div>`:''}
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+                ${subDone
+                  ?`<button class="note-save" style="background:#C62828" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">✕ Freigabe aufheben</button>`
+                  :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">✓ Freigeben</button>`
+                }
+                ${b!=='Pfoten'||si!==1?`<label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip?'checked':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>`:''}
+              </div>
+              <div class="note-box">
+                <div class="note-lbl" style="color:${subNoteColor};border-left:3px solid ${subNoteColor};padding-left:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${subNoteColor};margin-right:4px;"></span>Trainernotiz (intern) — ${activeTrainer.name}</div>
+                <textarea class="note-ta" placeholder="Neue Notiz hinzufügen..." style="border-left:3px solid ${subNoteColor};padding-left:8px;color:${subNoteColor};" onclick="event.stopPropagation()"></textarea>
+                <button class="note-save" onclick="event.stopPropagation();saveSubNote('${p.id}',${i},${si},this.previousElementSibling.value)">Hinzufügen ✓</button>
+                ${subNoteEntriesHTML}
+              </div>
+            </div>`;
+        });
+        return;
+      }
 
       if(subs.length>0){
         const subsDone=subs.filter((_,si)=>{const sk2=k+'_sub'+si;return state[sk2]&&state[sk2].status==='done';}).length;
@@ -952,7 +1247,6 @@ function renderList(){
           const sd=subState&&subState.status==='done';
           const subTrainer=sd?(trainers.find(x=>x.id===subState.trainer)||trainers[0]):null;
           const subColor=subTrainer?subTrainer.color:'';
-          const subDate=sd?subState.date:'';
           const subDesc=critObj&&critObj.sections&&critObj.sections[si]?critObj.sections[si].text:'';
           const checkStyle=sd?'background:'+subColor+';border-color:'+subColor+';color:#fff;':isInlineGroup?'border-color:#FB8C00;':'';
           behaviorsHTML+=`
@@ -962,7 +1256,7 @@ function renderList(){
                 <div class="subtask-label${sd?' done':''}">${si+1}. ${sub}</div>
                 ${subDesc&&!sd?'<div style="font-size:11px;color:#666;margin-top:3px;line-height:1.5;padding-right:8px;">'+subDesc.replace(/\n/g,'<br>')+'</div>':''}
               </div>
-              ${sd?'<div style="font-size:10px;color:#1E5C47;font-family:monospace;flex-shrink:0;">'+subDate+'</div>':''}
+              ${sd?completionDateHTML(p.id,sk2,subState.date,isParticipantMode):''}
             </div>`;
           if(isTrainingsplan&&si===0){
             const goalVal=state[k+'_goal']||'';
@@ -979,9 +1273,10 @@ function renderList(){
               }
             </div>
             <div class="note-box" style="margin-top:8px">
-              <div class="note-lbl" style="${noteColor?'color:'+noteColor+';border-left:3px solid '+noteColor+';padding-left:6px;':''}">${noteColor?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>`:''}Trainernotiz (intern) — ${noteTrainer?noteTrainer.name:activeTrainer.name}</div>
-              <textarea class="note-ta" placeholder="Bemerkung..." style="${noteColor?'border-left:3px solid '+noteColor+';padding-left:8px;color:'+noteColor+';':''}" onclick="event.stopPropagation()" onchange="saveNote('${p.id}',${i},this.value)">${noteVal}</textarea>
-              <button class="note-save" onclick="event.stopPropagation();closeExp('${k}')">Speichern ✓</button>
+              <div class="note-lbl" style="color:${noteColor};border-left:3px solid ${noteColor};padding-left:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>Trainernotiz (intern) — ${activeTrainer.name}</div>
+              <textarea class="note-ta" placeholder="Neue Notiz hinzufügen..." style="border-left:3px solid ${noteColor};padding-left:8px;color:${noteColor};" onclick="event.stopPropagation()"></textarea>
+              <button class="note-save" onclick="event.stopPropagation();saveNote('${p.id}',${i},this.previousElementSibling.value)">Hinzufügen ✓</button>
+              ${noteEntriesHTML}
             </div>
           </div>`;
       } else {
@@ -1003,9 +1298,10 @@ function renderList(){
               </label>
             </div>
             <div class="note-box">
-              <div class="note-lbl" style="${noteColor?'color:'+noteColor+';border-left:3px solid '+noteColor+';padding-left:6px;':''}">${noteColor?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>`:''}Trainernotiz (intern) — ${noteTrainer?noteTrainer.name:activeTrainer.name}</div>
-              <textarea class="note-ta" placeholder="Bemerkung..." style="${noteColor?'border-left:3px solid '+noteColor+';padding-left:8px;color:'+noteColor+';':''}" onclick="event.stopPropagation()" onchange="saveNote('${p.id}',${i},this.value)">${noteVal}</textarea>
-              <button class="note-save" onclick="event.stopPropagation();closeExp('${k}')">Speichern ✓</button>
+              <div class="note-lbl" style="color:${noteColor};border-left:3px solid ${noteColor};padding-left:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>Trainernotiz (intern) — ${activeTrainer.name}</div>
+              <textarea class="note-ta" placeholder="Neue Notiz hinzufügen..." style="border-left:3px solid ${noteColor};padding-left:8px;color:${noteColor};" onclick="event.stopPropagation()"></textarea>
+              <button class="note-save" onclick="event.stopPropagation();saveNote('${p.id}',${i},this.previousElementSibling.value)">Hinzufügen ✓</button>
+              ${noteEntriesHTML}
             </div>
           </div>`;
       }
@@ -1018,8 +1314,8 @@ function renderList(){
         <div class="p-info">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${nameHTML}${doneBadge}</div>
           <div class="p-meta">
-            <span class="p-since">seit ${p.since}</span>
-            ${last?`<div style="width:10px;height:10px;border-radius:50%;background:${last.trainer?last.trainer.color:'#ccc'};flex-shrink:0;" title="Zuletzt: ${last.trainer?last.trainer.name:''} am ${last.date}"></div>`:''}
+            ${isParticipantMode?`<span class="p-since">seit ${p.since}</span>`:`<label class="p-since">seit <input class="p-since-date" type="date" aria-label="Erstellungsdatum des Teilnehmers ändern" value="${participantCreatedDateInput(p)}" onclick="event.stopPropagation()" onchange="saveParticipantCreationDate('${p.id}',this.value)"></label>`}
+            ${lastAdmin?`<div id="last-admin-dot-${p.id}" style="width:10px;height:10px;border-radius:50%;background:${lastAdmin.color};flex-shrink:0;" title="Zuletzt geändert von ${lastAdmin.name}"></div>`:''}
           </div>
           <div style="margin-top:4px"><span class="p-contact-btn" onclick="toggleContact('${p.id}')">👤 Kontakt ${isContact?'▲':'▼'}</span></div>
         </div>
@@ -1035,22 +1331,23 @@ function renderList(){
       </div>
       <div class="contact-wrap${isContact?' visible':''}">
         <div class="contact-grid">
-          <div class="c-field"><div class="c-label">Telefon</div><input class="c-input" type="tel" placeholder="+49 ..." value="${p.tel}" onchange="saveContact('${p.id}','tel',this.value)"></div>
-          <div class="c-field"><div class="c-label">E-Mail</div><input class="c-input" type="email" placeholder="name@mail.de" value="${p.email}" onchange="saveContact('${p.id}','email',this.value)"></div>
+          <div class="c-field"><div class="c-label">Telefon</div><input class="c-input" type="tel" placeholder="+49 ..." value="${escapeNoteHTML(p.tel||'')}" ${telContactAttrs}></div>
+          <div class="c-field"><div class="c-label">E-Mail</div><input class="c-input" type="email" placeholder="name@mail.de" value="${escapeNoteHTML(p.email||'')}" ${emailContactAttrs}></div>
         </div>
         <div class="c-field" style="margin-top:8px">
           <div class="c-label">Tiere</div>
           ${(p.tiere||[{art:'',name:''}]).map((t,ti)=>`
             <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
-              <input class="c-input" style="flex:1" placeholder="Tierart (z.B. Hund)" value="${t.art}" onchange="saveTier('${p.id}',${ti},'art',this.value)">
-              <input class="c-input" style="flex:1" placeholder="Name" value="${t.name}" onchange="saveTier('${p.id}',${ti},'name',this.value)">
+              <input class="c-input" style="flex:1" placeholder="Tierart (z.B. Hund)" value="${escapeNoteHTML(t.art||'')}" ${isParticipantMode?`oninput="saveTier('${p.id}',${ti},'art',this.value)" onblur="flushParticipantDetails('${p.id}')"`:`onchange="saveTier('${p.id}',${ti},'art',this.value)"`}>
+              <input class="c-input" style="flex:1" placeholder="Name" value="${escapeNoteHTML(t.name||'')}" ${isParticipantMode?`oninput="saveTier('${p.id}',${ti},'name',this.value)" onblur="flushParticipantDetails('${p.id}')"`:`onchange="saveTier('${p.id}',${ti},'name',this.value)"`}>
               ${ti>0?`<span style="cursor:pointer;color:var(--light);font-size:16px;padding:0 4px" onclick="removeTier('${p.id}',${ti})">✕</span>`:''}
             </div>
           `).join('')}
           <button style="font-size:11px;color:#1E5C47;background:none;border:1px dashed var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:2px" onclick="addTier('${p.id}')">+ Tier hinzufügen</button>
         </div>
-        <div class="c-field" style="margin-top:8px"><div class="c-label">Interne Notiz</div><textarea class="c-note" rows="2" placeholder="z.B. Sonderregelung..." onchange="saveContact('${p.id}','notiz',this.value)">${p.notiz}</textarea></div>
-        <div class="move-bar"><span class="move-label">Verschieben nach:</span>${moveBtns}<button class="move-btn" style="margin-left:auto;color:#C62828;border-color:#FFCDD2;" onclick="deleteP('${p.id}')">🗑 Löschen</button></div>
+        ${isParticipantMode?`<div id="contact-save-status-${p.id}" role="status" aria-live="polite" style="min-height:1em;margin-top:5px;color:var(--muted);font-size:11px"></div>`:''}
+        ${isParticipantMode?'':`<div class="c-field" style="margin-top:8px"><div class="c-label">Interne Notiz</div><textarea class="c-note" rows="2" placeholder="z.B. Sonderregelung..." onchange="saveContact('${p.id}','notiz',this.value)">${p.notiz}</textarea></div>`}
+        ${isParticipantMode?'':`<div class="move-bar"><span class="move-label">Verschieben nach:</span>${moveBtns}<button class="move-btn" style="margin-left:auto;color:#C62828;border-color:#FFCDD2;" onclick="deleteP('${p.id}')">🗑 Löschen</button></div>`}
       </div>
       <div class="tasks-wrap${isOpen?' visible':''}">${behaviorsHTML}</div>
     `;
@@ -1076,11 +1373,38 @@ function toggleCard(pId){
 window.toggleCard=toggleCard;
 function toggleContact(pId){if(openContact.has(pId))openContact.delete(pId);else openContact.add(pId);renderList();}
 window.toggleContact=toggleContact;
-function saveContact(pId,f,v){const p=getP(pId);if(p){p[f]=v;void persistParticipantDetails(pId);}}
+const participantDetailsSaveTimers=new Map();
+function setParticipantContactSaveStatus(pId,message){
+  const status=document.getElementById('contact-save-status-'+pId);
+  if(status)status.textContent=message;
+}
+function scheduleParticipantDetailsSave(pId,immediate=false){
+  if(!document.body.classList.contains('participant-mode')){void persistParticipantDetails(pId);return;}
+  clearTimeout(participantDetailsSaveTimers.get(pId));
+  if(immediate){
+    participantDetailsSaveTimers.delete(pId);
+    void persistParticipantDetails(pId);
+    return;
+  }
+  setParticipantContactSaveStatus(pId,'Änderungen werden gespeichert...');
+  participantDetailsSaveTimers.set(pId,setTimeout(()=>{
+    participantDetailsSaveTimers.delete(pId);
+    void persistParticipantDetails(pId);
+  },650));
+}
+function flushParticipantDetails(pId){
+  const timer=participantDetailsSaveTimers.get(pId);
+  if(!timer)return;
+  clearTimeout(timer);
+  participantDetailsSaveTimers.delete(pId);
+  void persistParticipantDetails(pId);
+}
+window.flushParticipantDetails=flushParticipantDetails;
+function saveContact(pId,f,v){const p=getP(pId);if(p){p[f]=v;scheduleParticipantDetailsSave(pId);}}
 window.saveContact=saveContact;
-function saveTier(pId,ti,field,val){const p=getP(pId);if(p){if(!p.tiere)p.tiere=[{art:'',name:''}];p.tiere[ti][field]=val;void persistParticipantDetails(pId);}}
+function saveTier(pId,ti,field,val){const p=getP(pId);if(p){if(!p.tiere)p.tiere=[{art:'',name:''}];p.tiere[ti][field]=val;scheduleParticipantDetailsSave(pId);}}
 window.saveTier=saveTier;
-function addTier(pId){const p=getP(pId);if(p){if(!p.tiere)p.tiere=[{art:'',name:''}];p.tiere.push({art:'',name:''});void persistParticipantDetails(pId);renderList();}}
+function addTier(pId){const p=getP(pId);if(p){if(!p.tiere)p.tiere=[{art:'',name:''}];p.tiere.push({art:'',name:''});scheduleParticipantDetailsSave(pId,true);renderList();}}
 window.addTier=addTier;
 function removeTier(pId,ti){const p=getP(pId);if(p&&p.tiere&&p.tiere.length>1){p.tiere.splice(ti,1);void persistParticipantDetails(pId);renderList();}}
 window.removeTier=removeTier;
@@ -1129,7 +1453,9 @@ async function createParticipant(event){
   const result=await response.json().catch(()=>({error:'Ungültige Serverantwort'}));
   submitButton.disabled=false;
   if(!response.ok){errorElement.textContent=result.error||'Teilnehmer konnte nicht angelegt werden';return;}
-  participants.push({id:result.participant.id,name:result.participant.display_name,group:result.participant.group||'aktiv',since:today(),tel:'',email:result.participant.email,tiere:[{art:'',name:''}],notiz:''});
+  participants.push({id:result.participant.id,name:result.participant.display_name,group:result.participant.group||'aktiv',since:today(),createdAt:new Date().toISOString(),tel:'',email:result.participant.email,tiere:[{art:'',name:''}],notiz:'',lastChangedByTrainerId:activeTrainer.id});
+  void saveLastAdminEditor(result.participant.id);
+  void notifyOtherAdmins(result.participant.id,'hat einen Teilnehmer hinzugefügt.',result.participant.display_name);
   closeParticipantForm();initTabs();renderList();
 }
 window.createParticipant=createParticipant;
@@ -1153,6 +1479,15 @@ function handleB(pId,bIdx){
   renderList();
 }
 window.handleB=handleB;
+function handleSubPoint(pId,bIdx,si,pi){
+  const k=sk(pId,bIdx)+'_sub'+si+'_point'+pi;
+  const s=state[k]||{status:'open'};
+  if(s.status==='open')state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+  else delete state[k];
+  void persistParticipantProgress(pId);
+  renderList();
+}
+window.handleSubPoint=handleSubPoint;
 function handleSub(pId,bIdx,si){
   const k=sk(pId,bIdx)+'_sub'+si;
   const s=state[k]||{status:'open'};
@@ -1161,7 +1496,9 @@ function handleSub(pId,bIdx,si){
   const b=BEHAVIORS[bIdx];
   const subs=SUBTASKS[b]||[];
   const allDone=subs.every((_,i)=>{const sk2=sk(pId,bIdx)+'_sub'+i;return state[sk2]&&state[sk2].status==='done';});
-  if(allDone){
+  if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
+    delete state[sk(pId,bIdx)];
+  } else if(allDone){
     state[sk(pId,bIdx)]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
     openExpand.delete(sk(pId,bIdx)+'_sub');
   } else{delete state[sk(pId,bIdx)];}
@@ -1198,13 +1535,61 @@ function toggleSubtasks(k){
 window.toggleSubtasks=toggleSubtasks;
 function toggleWip(pId,bIdx,val){state[sk(pId,bIdx)+'_wip']=val;void persistParticipantProgress(pId);renderList();}
 window.toggleWip=toggleWip;
+function toggleSubWip(pId,bIdx,si,val){state[sk(pId,bIdx)+'_sub'+si+'_wip']=val;void persistParticipantProgress(pId);renderList();}
+window.toggleSubWip=toggleSubWip;
+function escapeNoteHTML(value){
+  return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
+function trainerNoteEntriesHTML(noteKey){
+  const storedEntries=state[noteKey+'_note_entries'];
+  const entries=Array.isArray(storedEntries)?storedEntries.slice():[];
+  const legacyNote=state[noteKey+'_note'];
+  if(!entries.length&&typeof legacyNote==='string'&&legacyNote.trim()){
+    entries.push({text:legacyNote,trainer:state[noteKey+'_note_trainer']||trainers[0].id});
+  }
+  return entries.reverse().map(entry=>{
+    const noteTrainer=trainers.find(t=>t.id===Number(entry.trainer))||trainers[0];
+    const noteTime=entry.ts?new Date(entry.ts).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}):'';
+    const noteDate=entry.date?' · '+escapeNoteHTML(entry.date)+(noteTime?' '+noteTime:''):'';
+    return`<div class="trainer-note-entry" style="border-left-color:${noteTrainer.color};color:${noteTrainer.color}"><div class="trainer-note-entry-meta">${escapeNoteHTML(noteTrainer.name)}${noteDate}</div><div class="trainer-note-entry-text">${escapeNoteHTML(entry.text).replace(/\n/g,'<br>')}</div></div>`;
+  }).join('');
+}
+function trainerNoteDotsHTML(noteKey){
+  const storedEntries=state[noteKey+'_note_entries'];
+  const entries=Array.isArray(storedEntries)?storedEntries:[];
+  const newestEntry=entries.slice().reverse().find(entry=>typeof entry.text==='string'&&entry.text.trim());
+  const legacyNote=state[noteKey+'_note'];
+  const trainerId=newestEntry
+    ?Number(newestEntry.trainer)||trainers[0].id
+    :typeof legacyNote==='string'&&legacyNote.trim()?Number(state[noteKey+'_note_trainer'])||trainers[0].id:null;
+  const trainer=trainers.find(item=>item.id===trainerId);
+  if(!trainer)return'';
+  return`<span title="Neueste Trainernotiz: ${escapeNoteHTML(trainer.name)}" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${trainer.color};flex-shrink:0"></span>`;
+}
+function appendTrainerNote(pId,noteKey,value){
+  const text=value.trim();
+  if(!text)return;
+  const entriesKey=noteKey+'_note_entries';
+  const entries=Array.isArray(state[entriesKey])?state[entriesKey].slice():[];
+  const legacyNote=state[noteKey+'_note'];
+  if(!entries.length&&typeof legacyNote==='string'&&legacyNote.trim()){
+    entries.push({text:legacyNote,trainer:state[noteKey+'_note_trainer']||trainers[0].id});
+  }
+  entries.push({text,trainer:activeTrainer.id,date:today(),ts:Date.now()});
+  state[entriesKey]=entries;
+  delete state[noteKey+'_note'];
+  delete state[noteKey+'_note_trainer'];
+  void persistParticipantProgress(pId,'hat einen Kommentar geschrieben.');
+  renderList();
+}
 function saveNote(pId,bIdx,val){
-  state[sk(pId,bIdx)+'_note']=val;
-  if(val.trim()) state[sk(pId,bIdx)+'_note_trainer']=activeTrainer.id;
-  else delete state[sk(pId,bIdx)+'_note_trainer'];
-  void persistParticipantProgress(pId);
+  appendTrainerNote(pId,sk(pId,bIdx),val);
 }
 window.saveNote=saveNote;
+function saveSubNote(pId,bIdx,si,val){
+  appendTrainerNote(pId,sk(pId,bIdx)+'_sub'+si,val);
+}
+window.saveSubNote=saveSubNote;
 function saveGoal(pId,bIdx,val){state[sk(pId,bIdx)+'_goal']=val;void persistParticipantProgress(pId);}
 window.saveGoal=saveGoal;
 function saveKfField(pId,bIdx,field,val){state[sk(pId,bIdx)+'_kf_'+field]=val;void persistParticipantProgress(pId);}
@@ -1214,14 +1599,25 @@ window.closeExp=closeExp;
 
 function exportExcel(){
   const header=["Gruppe","Name","Seit","Fortschritt %","Erledigt","Offen",
-    ...BEHAVIORS.map((b,i)=>b.startsWith('__')?'Platz '+(i+1):b)];
+    ...BEHAVIORS.flatMap((b,i)=>b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'?SUBTASKS[b]:[b.startsWith('__')?'Platz '+(i+1):b])];
   const rows=[header];
   participants.forEach(p=>{
     const pr=getProgress(p.id);
     const pct=pr.done>0?Math.round((pr.done/pr.total)*100):0;
     const row=[p.group,p.name,p.since,pct+'%',pr.done,pr.open];
-    BEHAVIORS.forEach((_,i)=>{
+    BEHAVIORS.forEach((b,i)=>{
       const k=sk(p.id,i);const s=state[k];
+      if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
+        (SUBTASKS[b]||[]).forEach((_,si)=>{
+          const subState=state[k+'_sub'+si];
+          if(subState&&subState.status==='done'){
+            const tr=trainers.find(x=>x.id===subState.trainer)||trainers[0];
+            row.push(tr.short+' ('+subState.date+')');
+          } else if(state[k+'_sub'+si+'_wip'])row.push('In Bearbeitung');
+          else row.push('');
+        });
+        return;
+      }
       if(s&&s.status==='done'){
         const tr=trainers.find(x=>x.id===s.trainer)||trainers[0];
         row.push(tr.short+' ('+s.date+')');
