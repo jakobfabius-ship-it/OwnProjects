@@ -44,11 +44,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .toolbar input{flex:1;min-width:140px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--card);color:var(--text);outline:none}
 .sort-btn{padding:7px 12px;border:1px solid var(--border);border-radius:10px;font-size:12px;background:var(--card);color:var(--muted);cursor:pointer;white-space:nowrap}
 .sort-btn.active{background:#1E5C47;color:#fff;border-color:#1E5C47}
-.summary-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.s-pill{font-size:11px;font-weight:500;padding:4px 10px;border-radius:99px}
-.s-done{background:var(--green-bg);color:var(--green)}
-.s-wip{background:#FFF8E1;color:#F57F17}
-.s-open{background:var(--yellow-bg);color:var(--yellow)}
 .p-card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden;transition:box-shadow 0.15s}
 .p-card:hover{box-shadow:0 2px 10px rgba(0,0,0,0.06)}
 .p-header{display:flex;align-items:center;gap:10px;padding:11px 13px}
@@ -74,6 +69,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .p-stats-row{display:flex;gap:4px}
 .p-stat{font-size:10px;padding:2px 6px;border-radius:99px;font-weight:500}
 .p-stat.done{background:var(--green-bg);color:var(--green)}
+.p-stat.wip{background:#FFF8E1;color:#F57F17}
 .p-stat.open{background:var(--yellow-bg);color:var(--yellow)}
 .p-chevron{font-size:10px;color:var(--light);transition:transform 0.2s;margin-left:2px;cursor:pointer;padding:4px;align-self:center}
 .p-chevron.open{transform:rotate(180deg)}
@@ -256,7 +252,6 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <button class="sort-btn" onclick="setSort('alpha',this)">A–Z</button>
     <button class="sort-btn" onclick="addParticipant()" style="background:#E3F2FD;color:#1565C0;border-color:#90CAF9;">+ Teilnehmer</button>
   </div>
-  <div class="summary-bar" id="summary-bar"></div>
   <div id="list-container"></div>
   <div class="legend">
     <div class="leg-title">Legende</div>
@@ -453,6 +448,7 @@ async function loadParticipantsFromDatabase(){
     const saved=progressByParticipant.get(p.id)||{};
     return {id:p.id,name:p.display_name,group:p.participant_group||'aktiv',since:new Date(p.created_at).toLocaleDateString('de-DE'),createdAt:p.created_at,tel:p.phone||'',email:p.email,tiere:p.animals?.length?p.animals:[{art:'',name:''}],notiz:p.notes||'',lastChangedByTrainerId:lastEditorByParticipant.get(p.id)||null};
   });
+  participants.forEach(p=>migrateTableSidePositionState(p.id));
   initTabs();renderList();
 }
 
@@ -472,6 +468,7 @@ async function loadOwnParticipantData(userId){
   });
   activeGroup=participant.participant_group||'aktiv';
   state=savedState;
+  migrateTableSidePositionState(participant.id);
   participants=[{id:participant.id,name:participant.display_name,group:activeGroup,since:new Date(participant.created_at).toLocaleDateString('de-DE'),createdAt:participant.created_at,tel:participant.phone||'',email:participant.email,tiere:participant.animals?.length?participant.animals:[{art:'',name:''}],notiz:''}];
   initTabs();renderList();
 }
@@ -501,6 +498,25 @@ async function persistParticipantProgress(participantId,notificationMessage='hat
     await saveLastAdminEditor(participantId);
     void notifyOtherAdmins(participantId,notificationMessage);
   }
+}
+
+function taskNotificationPath(behaviorIndex,subtaskIndex,pointIndex){
+  const behavior=BEHAVIORS[behaviorIndex];
+  const category=BEHAVIORS.slice(0,behaviorIndex).reverse().find(item=>CAT_ITEMS.includes(item));
+  const categoryLabel=category?category.replace(/_grp$/,''):null;
+  const path=categoryLabel&&categoryLabel!==behavior?[categoryLabel,behavior]:[behavior];
+  if(subtaskIndex!==undefined){
+    const isGroup=['Pfoten','Fellpflege','Blutentnahme'].includes(behavior);
+    const subtask=isGroup
+      ?CRITERIA[behavior]?.sections?.[subtaskIndex]?.title
+      :SUBTASKS[behavior]?.[subtaskIndex];
+    if(subtask)path.push(subtask);
+  }
+  if(pointIndex!==undefined&&behavior==='Pfoten'&&subtaskIndex===1){
+    const point=SUBTASKS['Krallen schneiden oder schleifen']?.[pointIndex];
+    if(point)path.push(point);
+  }
+  return path.map(label=>`„${label}“`).join(' › ');
 }
 
 function updateLastAdminDot(participantId,trainerId){
@@ -613,10 +629,10 @@ function renderAdminInbox(){
   }
   list.innerHTML=adminInboxNotifications.map(notification=>{
     const createdAt=new Date(notification.created_at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const action=notification.message.replace(/^hat\s+/,'');
     return`<article class="admin-inbox-item${notification.read_at?'':' unread'}">
-      <div class="admin-inbox-participant">${escapeNoteHTML(notification.participant_name)}</div>
-      <div class="admin-inbox-message">${escapeNoteHTML(notification.message)}</div>
-      <div class="admin-inbox-meta">${escapeNoteHTML(notification.actor_name)} · ${escapeNoteHTML(createdAt)}</div>
+      <div class="admin-inbox-message">${escapeNoteHTML(notification.actor_name)} hat bei „${escapeNoteHTML(notification.participant_name)}“ ${escapeNoteHTML(action)}</div>
+      <div class="admin-inbox-meta">${escapeNoteHTML(createdAt)}</div>
       <button class="admin-inbox-delete" type="button" onclick="deleteAdminNotification(${Number(notification.id)})">Nachricht löschen</button>
     </article>`;
   }).join('');
@@ -703,13 +719,14 @@ const SUBTASKS={
   'Seitenlage / Brust-Bauch-Lage (Katze)':['Positive Ablenkung','Dauer'],
   'Berührungen (im Stehen oder in der Seitenlage)':['Anfassen','Berührungen mit 3 Gegenständen','3 unangenehme Reize'],
   'Fixieren':['Stehend','In Seitenlage'],
-  'Der Tisch':['Ruhig Stehen','Seitenwechsel','Berührungen im Stehen','Berührungen in der Seitenlage'],
+  'Der Tisch':['Ruhig Stehen','Seitenwechsel','Berührungen im Stehen','Seitenlage','Berührungen in der Seitenlage'],
   'Pfoten untersuchen':['Manipulation mit den Händen','Berührung mit Gegenständen'],
   'Verband anlegen':['An einer Vorderpfote','An einer Hinterpfote'],
   'Ohren':['Ohren anfassen','Ohren auswischen','Ohrentropfen','Untersuchung mit dem Otoskop'],
   'Augen':['Lidspalte öffnen','Augenregion säubern','Augentropfen','Augenuntersuchung'],
   'Maul':['Kontrolle von Zahnfleisch und Zähnen','Zähne putzen','Maul öffnen','Tabletten eingeben','Flüssigkeiten eingeben'],
   'Pfoten':['Pfoten untersuchen','Krallen schneiden oder schleifen','Verband anlegen','Pfotenschutz tragen'],
+  'Krallen schneiden oder schleifen':['Alle Krallen einzeln fixieren','Berühren aller Krallen mit dem Werkzeug','Schneidegeräusch mittels Holzstäbchen, Nudel oder Zahnstocher bzw. das Geräusch und die Vibration des Krallenschleifers simulieren'],
   'Fellpflege':['Kämmen oder Bürsten','Scheren','Waschen','Föhnen'],
   'Blutentnahme':['Stauschlauch','Rasieren','Desinfizieren','Venenpunktion simulieren','Röhrchen befüllen','Druckverband','Blutentnahme simulieren'],
 };
@@ -795,7 +812,7 @@ const CRITERIA={
     main:'Die Aufgaben sollen jeweils an einer Vorder- und einer Hinterpfote durchgeführt werden.',
     sections:[
       {title:'Pfoten untersuchen',text:'Du kannst die Pfoten deines Tieres von allen Seiten untersuchen. Hierbei kannst du auch mit den Fingern zwischen die Zehen und Ballen gehen und die Strukturen durchtasten.\nDu kannst außerdem die Pfoten mit drei verschiedenen Gegenständen berühren.'},
-      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:',subpoints:['Alle Krallen einzeln fixieren','Berühren aller Krallen mit dem Werkzeug','Schneidegeräusch mittels Holzstäbchen, Nudel oder Zahnstocher bzw. das Geräusch und die Vibration des Krallenschleifers simulieren']},
+      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:'},
       {title:'Verband anlegen',text:'Du kannst deinem Tier einen Verband fachgerecht anlegen. Dabei muss in jeden Zwischenzehenspalt und um die komplette Pfote Verbandswatte gelegt werden. Anschließend wird die Pfote mit einer selbsthaftenden Binde umwickelt.'},
       {title:'Pfotenschutz tragen',text:'Du kannst deinem Tier eine Socke oder einen Pfotenschuh anziehen. Dein Tier kann damit ein paar Schritte laufen. (In jedem Durchgang nur an einer Pfote)'},
     ]
@@ -895,6 +912,21 @@ const CAT_ITEMS=['Basics','Kopf','Pfoten_grp','Fellpflege_grp','Blutentnahme_grp
 const SUB_CAT_ITEMS=['Trainingsplan','Kundenfälle','Theoriethemen'];
 const INLINE_CRIT_GROUPS=['Pfoten','Fellpflege','Blutentnahme'];
 
+function migrateTableSidePositionState(participantId){
+  const markerKey=participantId+'|_task_schema_tisch_seitenlage_v1';
+  if(state[markerKey])return;
+  const taskKey=participantId+'|'+BEHAVIORS.indexOf('Der Tisch');
+  const oldKey=taskKey+'_sub3';
+  const newKey=taskKey+'_sub4';
+  Object.keys(state).forEach(key=>{
+    if(key===oldKey||key.startsWith(oldKey+'_')){
+      state[newKey+key.slice(oldKey.length)]=state[key];
+      delete state[key];
+    }
+  });
+  state[markerKey]=true;
+}
+
 function rDate(offset){const d=new Date();d.setDate(d.getDate()-offset);return d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear();}
 function rDateStr(){return rDate(Math.floor(Math.random()*400)+30);}
 
@@ -957,17 +989,21 @@ function getProgress(pId){
     const k=sk(pId,i);
     if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
       const subs=SUBTASKS[b]||[];
+      const nestedPoints=b==='Pfoten'?(SUBTASKS['Krallen schneiden oder schleifen']||[]):[];
       total+=subs.length;
       subs.forEach((_,si)=>{
         const subKey=k+'_sub'+si;
-        if(state[subKey]&&state[subKey].status==='done')done++;
+        if(b==='Pfoten'&&si===1){
+          if(state[subKey]&&state[subKey].status==='done')done++;
+          else if(state[subKey+'_wip']||nestedPoints.some((_,pi)=>state[subKey+'_point'+pi+'_wip']))wip++;
+        } else if(state[subKey]&&state[subKey].status==='done')done++;
         else if(state[subKey+'_wip'])wip++;
       });
       return;
     }
     total++;
     if(state[k]&&state[k].status==='done')done++;
-    else if(state[k+'_wip'])wip++;
+    else if(state[k+'_wip']||(SUBTASKS[b]||[]).some((_,si)=>state[k+'_sub'+si+'_wip']))wip++;
   });
   return{done,wip,open:total-done-wip,total};
 }
@@ -976,7 +1012,14 @@ function getLastEntry(pId){
   let last=null;
   BEHAVIORS.forEach((b,i)=>{
     const k=sk(pId,i);
-    const entries=b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'?(SUBTASKS[b]||[]).map((_,si)=>state[k+'_sub'+si]):[state[k]];
+    const entries=b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'
+      ?(SUBTASKS[b]||[]).flatMap((_,si)=>{
+        const subKey=k+'_sub'+si;
+        return b==='Pfoten'&&si===1
+          ?(SUBTASKS['Krallen schneiden oder schleifen']||[]).map((__,pi)=>state[subKey+'_point'+pi])
+          :[state[subKey]];
+      })
+      :[state[k]];
     entries.forEach(s=>{
       if(s&&s.status==='done'&&s.date&&(!last||s.ts>last.ts))last={date:s.date,trainer:trainers.find(t=>t.id===s.trainer),ts:s.ts||0};
     });
@@ -1047,15 +1090,6 @@ function filterList(q){filterQ=q.toLowerCase();renderList();}
 
 function parseDate(str){if(!str)return new Date(0);const p=str.split('.');return new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));}
 
-function renderSummary(list){
-  let td=0,tw=0,to=0;
-  list.forEach(p=>{const pr=getProgress(p.id);td+=pr.done;tw+=pr.wip;to+=pr.open;});
-  document.getElementById('summary-bar').innerHTML=
-    `<div class="s-pill s-done">✓ ${td} erledigt</div>`+
-    `<div class="s-pill s-wip">… ${tw} in Bearbeitung</div>`+
-    `<div class="s-pill s-open">◯ ${to} offen</div>`;
-}
-
 function renderList(){
   let list=participants.filter(p=>p.group===activeGroup&&p.name.toLowerCase().includes(filterQ));
   if(sortMode==='date')list.sort((a,b)=>parseDate(a.since)-parseDate(b.since));
@@ -1072,7 +1106,6 @@ function renderList(){
     });
   } else list.sort((a,b)=>a.name.localeCompare(b.name,'de'));
 
-  renderSummary(list);
   const container=document.getElementById('list-container');
   container.innerHTML='';
 
@@ -1115,11 +1148,12 @@ function renderList(){
       const noteEntriesHTML=trainerNoteEntriesHTML(k);
       const noteColor=activeTrainer.color;
       const wipVal=state[k+'_wip']||false;
+      const taskWipVal=wipVal||(SUBTASKS[b]||[]).some((_,si)=>state[k+'_sub'+si+'_wip']);
       const isExpanded=openExpand.has(k);
       const isPH=b.startsWith('__');
       const isCat=CAT_ITEMS.includes(b);
       const isSubCat=SUB_CAT_ITEMS.includes(b);
-      const isOpenTask=s.status!=='done'&&!wipVal&&!isPH&&!isCat&&!isSubCat;
+      const isOpenTask=s.status!=='done'&&!taskWipVal&&!isPH&&!isCat&&!isSubCat;
 
       if(isCat){
         currentSection=null;
@@ -1151,14 +1185,28 @@ function renderList(){
       let badgeHTML='';
       if(s.status==='done'){
         badgeHTML=`<div class="b-badge done" style="background:${trainerObj.color}"></div>`;
-      } else if(wipVal){
+      } else if(taskWipVal){
         badgeHTML=`<div class="b-badge wip">…</div>`;
       } else {
         badgeHTML=`<div class="b-badge open"></div>`;
       }
 
       const taskNoteDots=trainerNoteDotsHTML(k);
-      const metaHTML=s.status==='done'||taskNoteDots?`<div class="b-meta">${s.status==='done'?completionDateHTML(p.id,k,s.date,isParticipantMode):''}${taskNoteDots}</div>`:'';
+      const latestCompletedSubtask=subs.reduce((latest,_,si)=>{
+        const subState=state[k+'_sub'+si];
+        return subState&&subState.status==='done'&&(!latest||(subState.ts||0)>=(latest.ts||0))?subState:latest;
+      },null);
+      const subtaskTrainer=latestCompletedSubtask
+        ?trainers.find(item=>item.id===Number(latestCompletedSubtask.trainer))||trainers[0]
+        :null;
+      const subtaskDot=subtaskTrainer
+        ?`<span title="Neueste Freigabe: ${escapeNoteHTML(subtaskTrainer.name)}" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${subtaskTrainer.color};flex-shrink:0"></span>`
+        :'';
+      const latestTaskNote=latestTrainerNote(k);
+      const taskActivityDot=latestTaskNote&&(!latestCompletedSubtask||(latestTaskNote.ts||0)>=(latestCompletedSubtask.ts||0))
+        ?taskNoteDots
+        :subtaskDot||taskNoteDots;
+      const metaHTML=s.status==='done'||taskActivityDot?`<div class="b-meta">${s.status==='done'?completionDateHTML(p.id,k,s.date,isParticipantMode):''}${taskActivityDot}</div>`:'';
 
       if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
         const sections=CRITERIA[b].sections||[];
@@ -1166,24 +1214,51 @@ function renderList(){
           const subKey=k+'_sub'+si;
           const subState=state[subKey];
           const subDone=subState&&subState.status==='done';
-          const subWip=Boolean(state[subKey+'_wip']);
+          const sectionPoints=b==='Pfoten'&&si===1?(SUBTASKS[sub]||[]):[];
+          const hasPointWip=sectionPoints.some((_,pi)=>state[subKey+'_point'+pi+'_wip']);
+          const subWip=Boolean(state[subKey+'_wip']||hasPointWip);
           const subExpanded=openExpand.has(subKey);
           const subTrainer=subDone?(trainers.find(x=>x.id===subState.trainer)||trainers[0]):null;
           const subColor=subTrainer?subTrainer.color:'';
           const subDesc=sections[si]?sections[si].text:'';
-          const subpoints=sections[si]&&sections[si].subpoints?sections[si].subpoints:[];
+          const subpoints=sectionPoints;
           const subpointsDone=subpoints.filter((_,pi)=>state[subKey+'_point'+pi]&&state[subKey+'_point'+pi].status==='done').length;
+          const latestPointActivity=subpoints.reduce((latest,_,pi)=>{
+            const pointState=state[subKey+'_point'+pi];
+            return pointState&&pointState.status==='done'&&(!latest||(pointState.ts||0)>=(latest.ts||0))?pointState:latest;
+          },null);
           const subpointsHTML=subpoints.map((point,pi)=>{
             const pointKey=subKey+'_point'+pi;
             const pointState=state[pointKey];
             const pointDone=pointState&&pointState.status==='done';
+            const pointWip=Boolean(state[pointKey+'_wip']||(pi===0&&state[subKey+'_wip']));
+            const pointTrainer=pointDone
+              ?trainers.find(x=>x.id===Number(pointState.trainer))||trainers[0]
+              :null;
+            const pointCheckStyle=pointTrainer
+              ?` style="background:${pointTrainer.color};border-color:${pointTrainer.color};color:#fff"`
+              :'';
             return `<div class="subtask-item" onclick="event.stopPropagation();handleSubPoint('${p.id}',${i},${si},${pi})">
-              <div class="subtask-check${pointDone?' done':''}">${pointDone?'✓':''}</div>
-              <div class="subtask-label${pointDone?' done':''}">${pi+1}. ${point}</div>
+              <div class="subtask-check${pointDone?' done':''}"${pointCheckStyle}>${pointDone?'✓':''}</div>
+              <div class="subtask-label${pointDone?' done':''}" style="flex:1">${pi+1}. ${point}</div>
+              ${b==='Pfoten'&&si===1?`<label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${pointWip?'checked':''} ${pointDone?'disabled':''} onchange="toggleSubPointWip('${p.id}',${i},${si},${pi},this.checked)"> In Bearbeitung</label>`:''}
+              ${pointDone?completionDateHTML(p.id,pointKey,pointState.date,isParticipantMode):''}
             </div>`;
           }).join('');
           const subNoteEntriesHTML=trainerNoteEntriesHTML(subKey);
-          const subNoteDots=trainerNoteDotsHTML(subKey);
+          const latestSubNote=latestTrainerNote(subKey);
+          const latestSubActivity=[
+            latestSubNote,
+            subDone?subState:null,
+            latestPointActivity
+          ].filter(Boolean).reduce((latest,activity)=>
+            !latest||(activity.ts||0)>=(latest.ts||0)?activity:latest,null);
+          const latestSubTrainer=latestSubActivity
+            ?trainers.find(x=>x.id===Number(latestSubActivity.trainer))||trainers[0]
+            :null;
+          const subActivityDot=latestSubTrainer
+            ?`<span title="Neueste Änderung: ${escapeNoteHTML(latestSubTrainer.name)}" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${latestSubTrainer.color};flex-shrink:0"></span>`
+            :'';
           const subNoteColor=activeTrainer.color;
           const subBadge=subDone
             ?`<div class="b-badge done" style="background:${subColor}"></div>`
@@ -1192,7 +1267,7 @@ function renderList(){
             <div class="b-item${subDone?'':' pending'}" onclick="toggleExpand('${subKey}')">
               ${subBadge}
               <div class="b-label${subDone?' done':''}">${sub}${subpoints.length?` <span style="font-size:10px;color:var(--muted);font-weight:400">(${subpointsDone}/${subpoints.length})</span>`:''}</div>
-              ${subDone||subNoteDots?`<div class="b-meta">${subDone?completionDateHTML(p.id,subKey,subState.date,isParticipantMode):''}${subNoteDots}</div>`:''}
+              ${subDone||subActivityDot?`<div class="b-meta">${subDone?completionDateHTML(p.id,subKey,subState.date,isParticipantMode):''}${subActivityDot}</div>`:''}
             </div>
             <div class="exp-row${subExpanded?' visible':''}" id="exp_${subKey.replace(/\|/g,'_')}">
               <div class="crit-box"><div class="crit-lbl">📋 Kriterium</div><div class="crit-text">${subDesc.replace(/\n/g,'<br>')}</div></div>
@@ -1245,6 +1320,7 @@ function renderList(){
           const sk2=k+'_sub'+si;
           const subState=state[sk2];
           const sd=subState&&subState.status==='done';
+          const subWip=Boolean(state[sk2+'_wip']);
           const subTrainer=sd?(trainers.find(x=>x.id===subState.trainer)||trainers[0]):null;
           const subColor=subTrainer?subTrainer.color:'';
           const subDesc=critObj&&critObj.sections&&critObj.sections[si]?critObj.sections[si].text:'';
@@ -1257,6 +1333,7 @@ function renderList(){
                 ${subDesc&&!sd?'<div style="font-size:11px;color:#666;margin-top:3px;line-height:1.5;padding-right:8px;">'+subDesc.replace(/\n/g,'<br>')+'</div>':''}
               </div>
               ${sd?completionDateHTML(p.id,sk2,subState.date,isParticipantMode):''}
+              <label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip?'checked':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>
             </div>`;
           if(isTrainingsplan&&si===0){
             const goalVal=state[k+'_goal']||'';
@@ -1324,6 +1401,7 @@ function renderList(){
           <div class="p-progbar"><div class="p-progfill" style="width:${pct}%;background:${aColor}"></div></div>
           <div class="p-stats-row">
             <div class="p-stat done">✓ ${pr.done}</div>
+            <div class="p-stat wip">… ${pr.wip}</div>
             <div class="p-stat open">◯ ${pr.open}</div>
           </div>
         </div>
@@ -1416,11 +1494,36 @@ function saveName(pId){
   editingName=null;void persistParticipantDetails(pId);renderList();
 }
 window.saveName=saveName;
-function deleteP(pId){
+const deletingParticipants=new Set();
+async function deleteP(pId){
   if(!confirm('Teilnehmer wirklich löschen?'))return;
-  participants=participants.filter(p=>p.id!==pId);
-  openCards.delete(pId);openContact.delete(pId);
-  initTabs();renderList();
+  if(deletingParticipants.has(pId))return;
+  deletingParticipants.add(pId);
+  const deleteButton=document.querySelector(`button[onclick="deleteP('${pId}')"]`);
+  if(deleteButton)deleteButton.disabled=true;
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session)throw new Error('Du bist nicht angemeldet. Bitte melde dich erneut an.');
+    const response=await fetch(SUPABASE_URL+'/functions/v1/delete-participant',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
+      body:JSON.stringify({participant_id:pId})
+    });
+    let result;
+    try{result=await response.json();}
+    catch{throw new Error('Ungültige Serverantwort beim Löschen.');}
+    if(!response.ok)throw new Error(result.error||'Teilnehmer konnte nicht gelöscht werden.');
+    participants=participants.filter(p=>p.id!==pId);
+    Object.keys(state).forEach(key=>{if(key.startsWith(pId+'|'))delete state[key];});
+    openCards.delete(pId);openContact.delete(pId);
+    initTabs();renderList();
+  }catch(error){
+    console.error('Teilnehmer konnte nicht gelöscht werden:',error);
+    alert(error instanceof Error?error.message:'Teilnehmer konnte nicht gelöscht werden.');
+    if(deleteButton)deleteButton.disabled=false;
+  }finally{
+    deletingParticipants.delete(pId);
+  }
 }
 window.deleteP=deleteP;
 function addParticipant(){
@@ -1468,23 +1571,47 @@ window.moveP=moveP;
 function handleB(pId,bIdx){
   const k=sk(pId,bIdx);
   const s=state[k]||{status:'open'};
+  const task=taskNotificationPath(bIdx);
   if(s.status==='open'){
     state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+    (SUBTASKS[BEHAVIORS[bIdx]]||[]).forEach((_,si)=>{delete state[k+'_sub'+si+'_wip'];});
     openExpand.delete(k);
   } else if(s.status==='done'){
     delete state[k];
     openExpand.delete(k);
   }
-  void persistParticipantProgress(pId);
+  void persistParticipantProgress(pId,s.status==='open'
+    ?`hat die Aufgabe ${task} abgehakt.`
+    :`hat die Freigabe für die Aufgabe ${task} aufgehoben.`);
   renderList();
 }
 window.handleB=handleB;
 function handleSubPoint(pId,bIdx,si,pi){
-  const k=sk(pId,bIdx)+'_sub'+si+'_point'+pi;
+  const subKey=sk(pId,bIdx)+'_sub'+si;
+  const k=subKey+'_point'+pi;
   const s=state[k]||{status:'open'};
   if(s.status==='open')state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
   else delete state[k];
-  void persistParticipantProgress(pId);
+  delete state[k+'_wip'];
+  if(BEHAVIORS[bIdx]==='Pfoten'&&si===1){
+    const points=SUBTASKS['Krallen schneiden oder schleifen']||[];
+    if(pi===0)delete state[subKey+'_wip'];
+    const completedPoints=points
+      .map((_,pointIndex)=>state[subKey+'_point'+pointIndex])
+      .filter(point=>point&&point.status==='done');
+    if(points.length&&completedPoints.length===points.length){
+      const latestPoint=completedPoints.reduce((latest,point)=>(point.ts||0)>=(latest.ts||0)?point:latest);
+      state[subKey]={status:'done',trainer:latestPoint.trainer,date:latestPoint.date,ts:latestPoint.ts};
+      delete state[subKey+'_wip'];
+      points.forEach((_,pointIndex)=>{delete state[subKey+'_point'+pointIndex+'_wip'];});
+    } else {
+      delete state[subKey];
+    }
+  }
+  const task=taskNotificationPath(bIdx,si,pi);
+  void persistParticipantProgress(pId,s.status==='open'
+    ?`hat unter ${task} einen Baustein abgehakt.`
+    :`hat die Freigabe unter ${task} aufgehoben.`);
   renderList();
 }
 window.handleSubPoint=handleSubPoint;
@@ -1493,6 +1620,10 @@ function handleSub(pId,bIdx,si){
   const s=state[k]||{status:'open'};
   if(s.status==='open')state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
   else delete state[k];
+  delete state[k+'_wip'];
+  if(BEHAVIORS[bIdx]==='Pfoten'&&si===1){
+    (SUBTASKS['Krallen schneiden oder schleifen']||[]).forEach((_,pi)=>{delete state[k+'_point'+pi+'_wip'];});
+  }
   const b=BEHAVIORS[bIdx];
   const subs=SUBTASKS[b]||[];
   const allDone=subs.every((_,i)=>{const sk2=sk(pId,bIdx)+'_sub'+i;return state[sk2]&&state[sk2].status==='done';});
@@ -1502,7 +1633,10 @@ function handleSub(pId,bIdx,si){
     state[sk(pId,bIdx)]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
     openExpand.delete(sk(pId,bIdx)+'_sub');
   } else{delete state[sk(pId,bIdx)];}
-  void persistParticipantProgress(pId);
+  const task=taskNotificationPath(bIdx,si);
+  void persistParticipantProgress(pId,s.status==='open'
+    ?`hat die Aufgabe ${task} abgehakt.`
+    :`hat die Freigabe für die Aufgabe ${task} aufgehoben.`);
   renderList();
 }
 window.handleSub=handleSub;
@@ -1511,7 +1645,16 @@ function resetBehavior(pId,bIdx){
   delete state[k];
   const b=BEHAVIORS[bIdx];
   const subs=SUBTASKS[b]||[];
-  subs.forEach((_,si)=>{delete state[k+'_sub'+si];});
+  subs.forEach((_,si)=>{
+    delete state[k+'_sub'+si];
+    delete state[k+'_sub'+si+'_wip'];
+    if(b==='Pfoten'&&si===1){
+      (SUBTASKS['Krallen schneiden oder schleifen']||[]).forEach((__,pi)=>{
+        delete state[k+'_sub'+si+'_point'+pi];
+        delete state[k+'_sub'+si+'_point'+pi+'_wip'];
+      });
+    }
+  });
   openExpand.delete(k);
   void persistParticipantProgress(pId);
   renderList();
@@ -1537,6 +1680,16 @@ function toggleWip(pId,bIdx,val){state[sk(pId,bIdx)+'_wip']=val;void persistPart
 window.toggleWip=toggleWip;
 function toggleSubWip(pId,bIdx,si,val){state[sk(pId,bIdx)+'_sub'+si+'_wip']=val;void persistParticipantProgress(pId);renderList();}
 window.toggleSubWip=toggleSubWip;
+function toggleSubPointWip(pId,bIdx,si,pi,val){
+  const subKey=sk(pId,bIdx)+'_sub'+si;
+  const pointKey=subKey+'_point'+pi;
+  if(state[pointKey]&&state[pointKey].status==='done')return;
+  state[pointKey+'_wip']=val;
+  if(pi===0)delete state[subKey+'_wip'];
+  void persistParticipantProgress(pId);
+  renderList();
+}
+window.toggleSubPointWip=toggleSubPointWip;
 function escapeNoteHTML(value){
   return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 }
@@ -1554,19 +1707,24 @@ function trainerNoteEntriesHTML(noteKey){
     return`<div class="trainer-note-entry" style="border-left-color:${noteTrainer.color};color:${noteTrainer.color}"><div class="trainer-note-entry-meta">${escapeNoteHTML(noteTrainer.name)}${noteDate}</div><div class="trainer-note-entry-text">${escapeNoteHTML(entry.text).replace(/\n/g,'<br>')}</div></div>`;
   }).join('');
 }
-function trainerNoteDotsHTML(noteKey){
+function latestTrainerNote(noteKey){
   const storedEntries=state[noteKey+'_note_entries'];
   const entries=Array.isArray(storedEntries)?storedEntries:[];
   const newestEntry=entries.slice().reverse().find(entry=>typeof entry.text==='string'&&entry.text.trim());
+  if(newestEntry)return{trainer:Number(newestEntry.trainer)||trainers[0].id,ts:newestEntry.ts||0};
   const legacyNote=state[noteKey+'_note'];
-  const trainerId=newestEntry
-    ?Number(newestEntry.trainer)||trainers[0].id
-    :typeof legacyNote==='string'&&legacyNote.trim()?Number(state[noteKey+'_note_trainer'])||trainers[0].id:null;
-  const trainer=trainers.find(item=>item.id===trainerId);
+  if(typeof legacyNote==='string'&&legacyNote.trim()){
+    return{trainer:Number(state[noteKey+'_note_trainer'])||trainers[0].id,ts:0};
+  }
+  return null;
+}
+function trainerNoteDotsHTML(noteKey){
+  const latestNote=latestTrainerNote(noteKey);
+  const trainer=latestNote&&trainers.find(item=>item.id===latestNote.trainer);
   if(!trainer)return'';
   return`<span title="Neueste Trainernotiz: ${escapeNoteHTML(trainer.name)}" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${trainer.color};flex-shrink:0"></span>`;
 }
-function appendTrainerNote(pId,noteKey,value){
+function appendTrainerNote(pId,noteKey,value,notificationMessage){
   const text=value.trim();
   if(!text)return;
   const entriesKey=noteKey+'_note_entries';
@@ -1579,15 +1737,17 @@ function appendTrainerNote(pId,noteKey,value){
   state[entriesKey]=entries;
   delete state[noteKey+'_note'];
   delete state[noteKey+'_note_trainer'];
-  void persistParticipantProgress(pId,'hat einen Kommentar geschrieben.');
+  void persistParticipantProgress(pId,notificationMessage);
   renderList();
 }
 function saveNote(pId,bIdx,val){
-  appendTrainerNote(pId,sk(pId,bIdx),val);
+  appendTrainerNote(pId,sk(pId,bIdx),val,`hat unter ${taskNotificationPath(bIdx)} einen Kommentar geschrieben.`);
 }
 window.saveNote=saveNote;
 function saveSubNote(pId,bIdx,si,val){
-  appendTrainerNote(pId,sk(pId,bIdx)+'_sub'+si,val);
+  const isGroup=['Pfoten','Fellpflege','Blutentnahme'].includes(BEHAVIORS[bIdx]);
+  const task=taskNotificationPath(bIdx,isGroup?si:undefined);
+  appendTrainerNote(pId,sk(pId,bIdx)+'_sub'+si,val,`hat unter ${task} einen Kommentar geschrieben.`);
 }
 window.saveSubNote=saveSubNote;
 function saveGoal(pId,bIdx,val){state[sk(pId,bIdx)+'_goal']=val;void persistParticipantProgress(pId);}
@@ -1599,7 +1759,9 @@ window.closeExp=closeExp;
 
 function exportExcel(){
   const header=["Gruppe","Name","Seit","Fortschritt %","Erledigt","Offen",
-    ...BEHAVIORS.flatMap((b,i)=>b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'?SUBTASKS[b]:[b.startsWith('__')?'Platz '+(i+1):b])];
+    ...BEHAVIORS.flatMap((b,i)=>b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'
+      ?SUBTASKS[b].flatMap((sub,si)=>b==='Pfoten'&&si===1?SUBTASKS['Krallen schneiden oder schleifen']: [sub])
+      :[b.startsWith('__')?'Platz '+(i+1):b])];
   const rows=[header];
   participants.forEach(p=>{
     const pr=getProgress(p.id);
@@ -1610,6 +1772,17 @@ function exportExcel(){
       if(b==='Pfoten'||b==='Fellpflege'||b==='Blutentnahme'){
         (SUBTASKS[b]||[]).forEach((_,si)=>{
           const subState=state[k+'_sub'+si];
+          if(b==='Pfoten'&&si===1){
+            (SUBTASKS['Krallen schneiden oder schleifen']||[]).forEach((__,pi)=>{
+              const pointState=state[k+'_sub'+si+'_point'+pi];
+              if(pointState&&pointState.status==='done'){
+                const tr=trainers.find(x=>x.id===pointState.trainer)||trainers[0];
+                row.push(tr.short+' ('+pointState.date+')');
+              } else if(state[k+'_sub'+si+'_point'+pi+'_wip']||(pi===0&&state[k+'_sub'+si+'_wip']))row.push('In Bearbeitung');
+              else row.push('');
+            });
+            return;
+          }
           if(subState&&subState.status==='done'){
             const tr=trainers.find(x=>x.id===subState.trainer)||trainers[0];
             row.push(tr.short+' ('+subState.date+')');
