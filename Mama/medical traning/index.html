@@ -23,6 +23,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .admin-inbox-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,calc(100vw - 28px));max-height:65vh;overflow:auto;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.18);z-index:200}
 .admin-inbox-panel[hidden]{display:none}
 .admin-inbox-header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border-bottom:1px solid var(--border);font-size:13px;font-weight:600}
+.admin-inbox-actions{display:flex;align-items:center;gap:8px}
+.admin-inbox-clear{border:0;background:transparent;color:#A32626;font:11px 'DM Sans',sans-serif;text-decoration:underline;cursor:pointer}
 .admin-inbox-close{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 5px}
 .admin-inbox-list{padding:6px 10px}
 .admin-inbox-item{padding:9px 8px;border-bottom:1px solid var(--border)}
@@ -236,7 +238,7 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <div class="admin-inbox-wrap">
       <button id="admin-inbox-button" class="admin-inbox-btn" type="button" aria-expanded="false" aria-controls="admin-inbox-panel" onclick="toggleAdminInbox()">✉ Postfach<span id="admin-inbox-count" class="admin-inbox-count" hidden></span></button>
       <div id="admin-inbox-panel" class="admin-inbox-panel" hidden>
-        <div class="admin-inbox-header"><span>Postfach</span><button class="admin-inbox-close" type="button" aria-label="Postfach schließen" onclick="toggleAdminInbox()">×</button></div>
+        <div class="admin-inbox-header"><span>Postfach</span><div class="admin-inbox-actions"><button class="admin-inbox-clear" type="button" onclick="clearAdminInbox()">Postfach leeren</button><button class="admin-inbox-close" type="button" aria-label="Postfach schließen" onclick="toggleAdminInbox()">×</button></div></div>
         <div id="admin-inbox-list" class="admin-inbox-list"><div class="admin-inbox-empty">Noch keine Nachrichten.</div></div>
       </div>
     </div>
@@ -658,6 +660,22 @@ async function deleteAdminNotification(notificationId){
 }
 window.deleteAdminNotification=deleteAdminNotification;
 
+async function clearAdminInbox(){
+  if(!adminInboxNotifications.length)return;
+  if(!confirm('Möchtest du alle Nachrichten in deinem Postfach endgültig löschen?'))return;
+  const {error}=await supabaseClient.from('admin_notifications')
+    .delete()
+    .eq('recipient_trainer_id',activeTrainer.id);
+  if(error){
+    console.warn('Postfach konnte nicht geleert werden:',error.message);
+    alert('Postfach konnte nicht geleert werden. Bitte versuche es erneut.');
+    return;
+  }
+  adminInboxNotifications=[];
+  renderAdminInbox();
+}
+window.clearAdminInbox=clearAdminInbox;
+
 async function initializeAuth(){
   const recoveryUrl=new URL(window.location.href);
   const recoveryHash=decodeURIComponent(window.location.hash||'');
@@ -726,7 +744,7 @@ const SUBTASKS={
   'Augen':['Lidspalte öffnen','Augenregion säubern','Augentropfen','Augenuntersuchung'],
   'Maul':['Kontrolle von Zahnfleisch und Zähnen','Zähne putzen','Maul öffnen','Tabletten eingeben','Flüssigkeiten eingeben'],
   'Pfoten':['Pfoten untersuchen','Krallen schneiden oder schleifen','Verband anlegen','Pfotenschutz tragen'],
-  'Krallen schneiden oder schleifen':['Alle Krallen einzeln fixieren','Berühren aller Krallen mit dem Werkzeug','Schneidegeräusch mittels Holzstäbchen, Nudel oder Zahnstocher bzw. das Geräusch und die Vibration des Krallenschleifers simulieren'],
+  'Krallen schneiden oder schleifen':['Alle Krallen einzeln fixieren','Berühren aller Krallen mit dem Werkzeug','Schneide- oder Schleifgeräusch simulieren'],
   'Fellpflege':['Kämmen oder Bürsten','Scheren','Waschen','Föhnen'],
   'Blutentnahme':['Stauschlauch','Rasieren','Desinfizieren','Venenpunktion simulieren','Röhrchen befüllen','Druckverband','Blutentnahme simulieren'],
 };
@@ -799,10 +817,10 @@ const CRITERIA={
     ]
   },
   'Maul':{
-    main:'Die Aufgaben sollen auf beiden Seiten gezeigt werden.',
+    main:'',
     sections:[
-      {title:'Kontrolle von Zahnfleisch und Zähnen',text:'Du kannst deinem Tier am Oberkiefer die Lefze hochheben und das Zahnfleisch und die Zähne (einschließlich der Backenzähne) anschauen.\nDu kannst die kapilläre Rückfüllungszeit bestimmen.'},
-      {title:'Zähne putzen',text:'Du kannst deinem Tier die Zähne im Ober- und im Unterkiefer putzen. Dabei kannst du entscheiden, welches Werkzeug du dafür benutzen möchtest.\n– Elektrische oder manuelle Zahnbürste, Fingerling\n– Mit oder ohne Zahnpasta'},
+      {title:'Kontrolle von Zahnfleisch und Zähnen',text:'Du kannst deinem Tier auf beiden Seiten am Oberkiefer die Lefze hochheben und das Zahnfleisch und die Zähne (einschließlich der Backenzähne) anschauen.\nDu kannst die kapilläre Rückfüllungszeit bestimmen.'},
+      {title:'Zähne putzen',text:'Du kannst deinem Tier auf beiden Seiten die Zähne im Ober- und im Unterkiefer putzen. Dabei kannst du entscheiden, welches Werkzeug du dafür benutzen möchtest.\n– Elektrische oder manuelle Zahnbürste, Fingerling\n– Mit oder ohne Zahnpasta'},
       {title:'Maul öffnen',text:'Dein Tier öffnet auf ein Signal aktiv sein Maul oder lässt es sich von dir passiv öffnen. Das Maul bleibt so weit und lange geöffnet, dass du die Maulhöhle inspizieren kannst oder eine Tablette eingeben kannst.'},
       {title:'Tabletten eingeben',text:'Du kannst deinem Tier wahlweise eine Tablette oder ein Stück Futter eingeben.'},
       {title:'Flüssigkeiten eingeben',text:'Du kannst je nach Größe deines Tieres 0,5 bis 1 ml Wasser ins Maul eingeben.'},
@@ -812,7 +830,7 @@ const CRITERIA={
     main:'Die Aufgaben sollen jeweils an einer Vorder- und einer Hinterpfote durchgeführt werden.',
     sections:[
       {title:'Pfoten untersuchen',text:'Du kannst die Pfoten deines Tieres von allen Seiten untersuchen. Hierbei kannst du auch mit den Fingern zwischen die Zehen und Ballen gehen und die Strukturen durchtasten.\nDu kannst außerdem die Pfoten mit drei verschiedenen Gegenständen berühren.'},
-      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:'},
+      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDas Schneide bzw. Schleifgeräusch kann mithilfe von Holzstäbchen, Nudeln oder ähnlichem simuliert werden.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:'},
       {title:'Verband anlegen',text:'Du kannst deinem Tier einen Verband fachgerecht anlegen. Dabei muss in jeden Zwischenzehenspalt und um die komplette Pfote Verbandswatte gelegt werden. Anschließend wird die Pfote mit einer selbsthaftenden Binde umwickelt.'},
       {title:'Pfotenschutz tragen',text:'Du kannst deinem Tier eine Socke oder einen Pfotenschuh anziehen. Dein Tier kann damit ein paar Schritte laufen. (In jedem Durchgang nur an einer Pfote)'},
     ]
@@ -845,7 +863,7 @@ const CRITERIA={
   'Maulkorb tragen (Hund) / Wrapping (Katze)':'Du kannst deinem Hund einen Maulkorb anziehen. Er kann damit 10 Sekunden stehen bleiben.\n\nDu kannst die Katze mithilfe der Wickelmethode „Scarf" nach Sophia Yin in ein Tuch einwickeln. Sie wartet so eingewickelt auf dem Tisch oder dem Boden, bis du das Tuch nach 10 Sekunden wieder aufwickelst.',
   'Halskragen tragen':'Dein Tier lässt sich einen Halskragen anziehen und kann sich damit in der Wohnung bewegen (Hunde auch mit Leine).',
   'Was ist Medical Training?':'Beschreibe mit deinen eigenen Worten, was Medical Training für dich bedeutet. Stell dir z.B. vor wie du einem Kunden erklärst, warum es sinnvoll ist, dass er mit seinem Tier das Medical Training startet.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
-  'Körpersprache von Hund und Mensch':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit der Körpersprache von Hund und Mensch im Training wichtig erscheint.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
+  'Körpersprache von Tier und Mensch':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit der Körpersprache von Tier und Mensch im Training wichtig erscheint.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
   'Dokumentation im Training':'Beschreibe mit deinen eigenen Worten, was dir im Zusammenhang mit der Dokumentation von Training wichtig erscheint.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
   'Verstärker und Strafen im Training':'Beschreibe mit deinen eigenen Worten, was mit den Begriffen Verstärker und Strafe im Training gemeint ist und wie sie sinnvoll eingesetzt werden können.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
   'Klassische Konditionierung':'Beschreibe mit deinen eigenen Worten was man unter der klassischen Konditionierung versteht und wo sie im Medical Training sinnvoll eingesetzt werden kann.\nDu kannst auch gerne eine Graphik oder ein Handout für deine Kunden entwerfen.',
@@ -1272,13 +1290,13 @@ function renderList(){
             <div class="exp-row${subExpanded?' visible':''}" id="exp_${subKey.replace(/\|/g,'_')}">
               <div class="crit-box"><div class="crit-lbl">📋 Kriterium</div><div class="crit-text">${subDesc.replace(/\n/g,'<br>')}</div></div>
               ${subpointsHTML?`<div class="task-subpoints">${subpointsHTML}</div>`:''}
-              <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+              ${b!=='Pfoten'||si!==1?`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
                 ${subDone
                   ?`<button class="note-save" style="background:#C62828" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">✕ Freigabe aufheben</button>`
                   :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">✓ Freigeben</button>`
                 }
-                ${b!=='Pfoten'||si!==1?`<label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip?'checked':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>`:''}
-              </div>
+                <label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip?'checked':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>
+              </div>`:''}
               <div class="note-box">
                 <div class="note-lbl" style="color:${subNoteColor};border-left:3px solid ${subNoteColor};padding-left:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${subNoteColor};margin-right:4px;"></span>Trainernotiz (intern) — ${activeTrainer.name}</div>
                 <textarea class="note-ta" placeholder="Neue Notiz hinzufügen..." style="border-left:3px solid ${subNoteColor};padding-left:8px;color:${subNoteColor};" onclick="event.stopPropagation()"></textarea>
@@ -1343,12 +1361,6 @@ function renderList(){
           }
         });
         behaviorsHTML+=`
-            <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
-              ${s.status==='done'
-                ?`<button class="note-save" style="background:#C62828" onclick="event.stopPropagation();resetBehavior('${p.id}',${i})">✕ Freigabe aufheben</button>`
-                :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleB('${p.id}',${i})">✓ Freigeben</button>`
-              }
-            </div>
             <div class="note-box" style="margin-top:8px">
               <div class="note-lbl" style="color:${noteColor};border-left:3px solid ${noteColor};padding-left:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${noteColor};margin-right:4px;"></span>Trainernotiz (intern) — ${activeTrainer.name}</div>
               <textarea class="note-ta" placeholder="Neue Notiz hinzufügen..." style="border-left:3px solid ${noteColor};padding-left:8px;color:${noteColor};" onclick="event.stopPropagation()"></textarea>
@@ -1575,10 +1587,8 @@ function handleB(pId,bIdx){
   if(s.status==='open'){
     state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
     (SUBTASKS[BEHAVIORS[bIdx]]||[]).forEach((_,si)=>{delete state[k+'_sub'+si+'_wip'];});
-    openExpand.delete(k);
   } else if(s.status==='done'){
     delete state[k];
-    openExpand.delete(k);
   }
   void persistParticipantProgress(pId,s.status==='open'
     ?`hat die Aufgabe ${task} abgehakt.`
