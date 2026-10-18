@@ -830,7 +830,7 @@ const CRITERIA={
     main:'Die Aufgaben sollen jeweils an einer Vorder- und einer Hinterpfote durchgeführt werden.',
     sections:[
       {title:'Pfoten untersuchen',text:'Du kannst die Pfoten deines Tieres von allen Seiten untersuchen. Hierbei kannst du auch mit den Fingern zwischen die Zehen und Ballen gehen und die Strukturen durchtasten.\nDu kannst außerdem die Pfoten mit drei verschiedenen Gegenständen berühren.'},
-      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDas Schneide bzw. Schleifgeräusch kann mithilfe von Holzstäbchen, Nudeln oder ähnlichem simuliert werden.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:'},
+      {title:'Krallen schneiden oder schleifen',text:'Hier müssen keine Krallen wirklich geschnitten oder geschliffen werden, wenn es nicht nötig ist.\nDas Schneide-- bzw. Schleifgeräusch kann mithilfe von Holzstäbchen, Nudeln oder ähnlichem simuliert werden.\nDie einzelnen Bausteine der Krallenpflege sollen gezeigt werden:'},
       {title:'Verband anlegen',text:'Du kannst deinem Tier einen Verband fachgerecht anlegen. Dabei muss in jeden Zwischenzehenspalt und um die komplette Pfote Verbandswatte gelegt werden. Anschließend wird die Pfote mit einer selbsthaftenden Binde umwickelt.'},
       {title:'Pfotenschutz tragen',text:'Du kannst deinem Tier eine Socke oder einen Pfotenschuh anziehen. Dein Tier kann damit ein paar Schritte laufen. (In jedem Durchgang nur an einer Pfote)'},
     ]
@@ -1295,7 +1295,7 @@ function renderList(){
                   ?`<button class="note-save" style="background:#C62828" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">✕ Freigabe aufheben</button>`
                   :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleSub('${p.id}',${i},${si})">✓ Freigeben</button>`
                 }
-                <label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip?'checked':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>
+                <label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip&&!subDone?'checked':''} ${subDone?'disabled':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>
               </div>`:''}
               <div class="note-box">
                 <div class="note-lbl" style="color:${subNoteColor};border-left:3px solid ${subNoteColor};padding-left:6px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${subNoteColor};margin-right:4px;"></span>Trainernotiz (intern) — ${activeTrainer.name}</div>
@@ -1351,7 +1351,7 @@ function renderList(){
                 ${subDesc&&!sd?'<div style="font-size:11px;color:#666;margin-top:3px;line-height:1.5;padding-right:8px;">'+subDesc.replace(/\n/g,'<br>')+'</div>':''}
               </div>
               ${sd?completionDateHTML(p.id,sk2,subState.date,isParticipantMode):''}
-              <label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip?'checked':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>
+              <label class="wip-check" onclick="event.stopPropagation()"><input type="checkbox" ${subWip&&!sd?'checked':''} ${sd?'disabled':''} onchange="toggleSubWip('${p.id}',${i},${si},this.checked)"> In Bearbeitung</label>
             </div>`;
           if(isTrainingsplan&&si===0){
             const goalVal=state[k+'_goal']||'';
@@ -1383,7 +1383,7 @@ function renderList(){
                 :`<button class="note-save" style="background:#1E5C47" onclick="event.stopPropagation();handleB('${p.id}',${i})">✓ Freigeben</button>`
               }
               <label class="wip-check" onclick="event.stopPropagation()">
-                <input type="checkbox" ${wipVal?'checked':''} onchange="toggleWip('${p.id}',${i},this.checked)"> In Bearbeitung
+                <input type="checkbox" ${wipVal&&s.status!=='done'?'checked':''} ${s.status==='done'?'disabled':''} onchange="toggleWip('${p.id}',${i},this.checked)"> In Bearbeitung
               </label>
             </div>
             <div class="note-box">
@@ -1586,9 +1586,11 @@ function handleB(pId,bIdx){
   const task=taskNotificationPath(bIdx);
   if(s.status==='open'){
     state[k]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+    delete state[k+'_wip'];
     (SUBTASKS[BEHAVIORS[bIdx]]||[]).forEach((_,si)=>{delete state[k+'_sub'+si+'_wip'];});
   } else if(s.status==='done'){
     delete state[k];
+    delete state[k+'_wip'];
   }
   void persistParticipantProgress(pId,s.status==='open'
     ?`hat die Aufgabe ${task} abgehakt.`
@@ -1641,6 +1643,7 @@ function handleSub(pId,bIdx,si){
     delete state[sk(pId,bIdx)];
   } else if(allDone){
     state[sk(pId,bIdx)]={status:'done',trainer:activeTrainer.id,date:today(),ts:Date.now()};
+    delete state[sk(pId,bIdx)+'_wip'];
     openExpand.delete(sk(pId,bIdx)+'_sub');
   } else{delete state[sk(pId,bIdx)];}
   const task=taskNotificationPath(bIdx,si);
@@ -1686,9 +1689,21 @@ function toggleSubtasks(k){
   renderList();
 }
 window.toggleSubtasks=toggleSubtasks;
-function toggleWip(pId,bIdx,val){state[sk(pId,bIdx)+'_wip']=val;void persistParticipantProgress(pId);renderList();}
+function toggleWip(pId,bIdx,val){
+  const k=sk(pId,bIdx);
+  if(state[k]&&state[k].status==='done')return;
+  state[k+'_wip']=val;
+  void persistParticipantProgress(pId);
+  renderList();
+}
 window.toggleWip=toggleWip;
-function toggleSubWip(pId,bIdx,si,val){state[sk(pId,bIdx)+'_sub'+si+'_wip']=val;void persistParticipantProgress(pId);renderList();}
+function toggleSubWip(pId,bIdx,si,val){
+  const k=sk(pId,bIdx)+'_sub'+si;
+  if(state[k]&&state[k].status==='done')return;
+  state[k+'_wip']=val;
+  void persistParticipantProgress(pId);
+  renderList();
+}
 window.toggleSubWip=toggleSubWip;
 function toggleSubPointWip(pId,bIdx,si,pi,val){
   const subKey=sk(pId,bIdx)+'_sub'+si;
