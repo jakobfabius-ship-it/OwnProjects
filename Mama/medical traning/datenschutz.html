@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datenschutzerklärung — Medical Trainer</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;padding:32px 16px;background:#F7F6F2;color:#1A1A18;font:16px/1.7 'DM Sans',Arial,sans-serif}
+    main{max-width:800px;margin:0 auto}
+    a{color:#1E5C47}
+    .back{display:inline-block;margin-bottom:18px;text-decoration:none}
+    article{padding:clamp(22px,5vw,40px);background:#fff;border:1px solid #E8E5DE;border-radius:14px}
+    h1{margin:0 0 8px;color:#1E5C47;font-size:clamp(26px,5vw,34px);line-height:1.2}
+    h2{margin:30px 0 8px;color:#1E5C47;font-size:19px;line-height:1.35}
+    p{margin:10px 0}
+    ul{padding-left:24px}
+    li{margin:5px 0}
+    .stand{margin:0 0 24px;color:#7A7870;font-size:13px}
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="index.html">← Zurück zur App</a>
+    <article>
+      <h1>Datenschutzerklärung</h1>
+      <p class="stand">Stand: Oktober 2026</p>
+
+      <h2>Verantwortliche Stelle</h2>
+      <p>Verantwortlich für die Verarbeitung personenbezogener Daten im Zusammenhang mit dieser App ist:</p>
+      <p><strong>Nicole Stein – Animal-College</strong><br>
+        Urmitzer Straße 16<br>
+        56218 Mülheim-Kärlich<br>
+        Deutschland</p>
+      <p>Telefon: <a href="tel:+491788907920">0178 – 8900792</a><br>
+        E-Mail: <a href="mailto:nicole.stein@animal-college.de">nicole.stein@animal-college.de</a><br>
+        Website: <a href="https://medical-trainer.com">https://medical-trainer.com</a></p>
+
+      <h2>Zweck und Funktionen der App</h2>
+      <p>Die Medical-Trainer-App dient der organisatorischen Begleitung und Dokumentation der Ausbildung zum Medical Trainer.</p>
+      <p>Die App ermöglicht es den Teilnehmerinnen und Teilnehmern, ihre hinterlegten Daten einzusehen und den Bearbeitungsstatus ihrer Ausbildungsaufgaben nachzuverfolgen. Die zuständigen Trainer und Coaches können den Status der Aufgaben überprüfen und entsprechend aktualisieren.</p>
+      <p>Die eigentlichen Ausbildungsaufgaben und deren Bearbeitung finden außerhalb dieser App statt. Über die App werden keine Aufgabeninhalte, Fotos oder Videos hochgeladen.</p>
+
+      <h2>Verarbeitete Daten</h2>
+      <p>Im Rahmen der Nutzung der App können folgende Daten verarbeitet werden:</p>
+      <ul>
+        <li><strong>Personen- und Kontaktdaten:</strong> Name, E-Mail-Adresse und Telefonnummer.</li>
+        <li><strong>Tierbezogene Angaben:</strong> Namen und Rassen der Tiere der jeweiligen Teilnehmer.</li>
+        <li><strong>Ausbildungsdaten:</strong> Bearbeitungs- und Erledigungsstatus der Ausbildungsaufgaben.</li>
+        <li><strong>Kontodaten:</strong> Nutzerkennung und die für die Anmeldung erforderlichen Authentifizierungsdaten.</li>
+        <li><strong>Technische Daten:</strong> gegebenenfalls technische Verbindungsdaten und Protokolldaten, die beim Betrieb der App anfallen.</li>
+      </ul>
+      <p>Passwörter werden für die Anmeldung über Supabase Auth verwaltet. Sie werden nicht im Klartext in der Teilnehmerdatenbank der App gespeichert.</p>
+
+      <h2>Zwecke und Rechtsgrundlagen der Verarbeitung</h2>
+      <p>Die Daten werden verarbeitet, um:</p>
+      <ul>
+        <li>die Teilnahme an der Ausbildung organisatorisch zu begleiten,</li>
+        <li>den jeweiligen Ausbildungsfortschritt zu dokumentieren,</li>
+        <li>den Aufgabenstatus durch die zuständigen Coaches überprüfen zu lassen,</li>
+        <li>Nutzerkonten und Zugriffsrechte zu verwalten,</li>
+        <li>die Sicherheit und Funktionsfähigkeit der App zu gewährleisten.</li>
+      </ul>
+      <p>Die Verarbeitung erfolgt, soweit sie für die Durchführung und Organisation der Ausbildung erforderlich ist, auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO.</p>
+      <p>Soweit erforderlich, kann die Verarbeitung außerdem auf Art. 6 Abs. 1 lit. f DSGVO beruhen. Das berechtigte Interesse liegt insbesondere im sicheren und ordnungsgemäßen Betrieb der App sowie in der Organisation der Ausbildung.</p>
+      <p>Sofern eine Verarbeitung ausnahmsweise auf einer Einwilligung beruht, erfolgt sie auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Eine erteilte Einwilligung kann jederzeit mit Wirkung für die Zukunft widerrufen werden.</p>
+
+      <h2>Zugriffsrechte und Nutzerkonten</h2>
+      <p>Die App verwendet unterschiedliche Zugriffsrechte:</p>
+      <ul>
+        <li>Teilnehmerinnen und Teilnehmer können ausschließlich ihre eigenen hinterlegten Daten und den Status ihrer Ausbildungsaufgaben einsehen.</li>
+        <li>Die verantwortliche Betreiberin und die hierzu berechtigten Trainer und Coaches können auf die für die Ausbildung erforderlichen Daten aller Teilnehmer zugreifen.</li>
+      </ul>
+      <p>Die Zugriffsrechte sollen verhindern, dass Teilnehmer Daten anderer Teilnehmer einsehen oder verändern können.</p>
+      <p>Für die Anmeldung werden persönliche Nutzerkonten verwendet. Die Authentifizierung erfolgt über Supabase Auth.</p>
+      <p>Die Teilnehmer erhalten Zugangsdaten für ihr jeweiliges Konto. Die Authentifizierungsfunktion dient dazu, die Identität angemeldeter Nutzer zu überprüfen und den Zugriff auf die jeweils freigegebenen Daten zu steuern.</p>
+      <p>Zugangsdaten dürfen nicht an andere Personen weitergegeben werden.</p>
+
+      <h2>Eingesetzte Dienstleister und Drittlandübermittlungen</h2>
+      <p>Die App wird über Netlify bereitgestellt. Für die Speicherung der Teilnehmerdaten wird Supabase als Datenbankdienst eingesetzt. Die Authentifizierung erfolgt ebenfalls über Supabase Auth.</p>
+      <p>Die verwendete Supabase-Datenbank befindet sich nach den vorliegenden Angaben in Irland innerhalb der Europäischen Union.</p>
+      <p>Mit den eingesetzten Dienstleistern wurden die erforderlichen Vereinbarungen zur Auftragsverarbeitung geprüft beziehungsweise abgeschlossen. Auch die Frage möglicher Übermittlungen personenbezogener Daten in Staaten außerhalb des Europäischen Wirtschaftsraums wurde geprüft.</p>
+      <p>Sollte eine solche Übermittlung stattfinden, erfolgt sie nur unter Beachtung der Voraussetzungen der Art. 44 ff. DSGVO.</p>
+
+      <h2>Speicherdauer und Löschung</h2>
+      <p>Die personenbezogenen Daten werden für die Dauer der jeweiligen Ausbildung gespeichert.</p>
+      <p>Nach Abschluss der Ausbildung veranlasst die verantwortliche Betreiberin die Löschung der betreffenden Daten. Dabei werden die in der Datenbank gespeicherten Teilnehmerdaten, Tierdaten und Aufgabenstatus sowie die zugehörigen Nutzerkonten gelöscht.</p>
+      <p>Die Löschung erfolgt manuell durch die verantwortliche Betreiberin und wird durch den eingerichteten Löschvorgang technisch umgesetzt.</p>
+      <p>Technische Protokolldaten (Logs) bei Netlify werden nach den vorliegenden Angaben nach 24 Stunden gelöscht.</p>
+      <p>Eine darüber hinausgehende Speicherung erfolgt nur, soweit sie aufgrund gesetzlicher Verpflichtungen oder aus anderen rechtlich zulässigen Gründen erforderlich ist.</p>
+
+      <h2>Datensicherheit</h2>
+      <p>Es werden technische und organisatorische Maßnahmen eingesetzt, um personenbezogene Daten vor unberechtigtem Zugriff, Verlust, Veränderung oder unbefugter Offenlegung zu schützen.</p>
+      <p>Dazu gehören insbesondere die Verwendung von Nutzerkonten, die Verwaltung von Zugriffsrechten und die Beschränkung des Datenzugriffs auf die jeweils berechtigten Personen.</p>
+      <p>Die Berechtigungen und Sicherheitseinstellungen der App und der Datenbank müssen regelmäßig überprüft werden.</p>
+
+      <h2>Empfänger der Daten</h2>
+      <p>Zugriff auf personenbezogene Daten erhalten nur diejenigen Stellen, die diesen Zugriff für die beschriebenen Zwecke benötigen. Hierzu gehören:</p>
+      <ul>
+        <li>die verantwortliche Betreiberin,</li>
+        <li>die für die Ausbildung zuständigen Trainer und Coaches,</li>
+        <li>die technischen Dienstleister Netlify und Supabase, soweit dies für den Betrieb, die Speicherung oder die Authentifizierung erforderlich ist.</li>
+      </ul>
+      <p>Eine Weitergabe an sonstige Dritte erfolgt nicht, sofern hierfür keine Rechtsgrundlage besteht oder eine gesetzliche Verpflichtung dies erfordert.</p>
+      <p>Die eingesetzten technischen Dienste und deren mögliche Datenübermittlungen außerhalb der Europäischen Union beziehungsweise des Europäischen Wirtschaftsraums wurden geprüft.</p>
+      <p>Soweit personenbezogene Daten in ein Drittland übermittelt werden, erfolgt dies nur unter Beachtung der gesetzlichen Voraussetzungen der Art. 44 ff. DSGVO, beispielsweise auf Grundlage eines Angemessenheitsbeschlusses oder geeigneter Garantien.</p>
+
+      <h2>Rechte betroffener Personen</h2>
+      <p>Betroffene Personen haben nach Maßgabe der gesetzlichen Voraussetzungen insbesondere folgende Rechte:</p>
+      <ul>
+        <li>Auskunft über die verarbeiteten personenbezogenen Daten (Art. 15 DSGVO),</li>
+        <li>Berichtigung unrichtiger oder unvollständiger Daten (Art. 16 DSGVO),</li>
+        <li>Löschung personenbezogener Daten (Art. 17 DSGVO),</li>
+        <li>Einschränkung der Verarbeitung (Art. 18 DSGVO),</li>
+        <li>Datenübertragbarkeit, soweit die gesetzlichen Voraussetzungen vorliegen (Art. 20 DSGVO),</li>
+        <li>Widerspruch gegen bestimmte Verarbeitungen (Art. 21 DSGVO).</li>
+      </ul>
+      <p>Beruht eine Verarbeitung auf einer Einwilligung, kann diese jederzeit mit Wirkung für die Zukunft widerrufen werden. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt davon unberührt.</p>
+      <p>Zur Ausübung dieser Rechte kann die verantwortliche Stelle unter folgender E-Mail-Adresse kontaktiert werden: <a href="mailto:nicole.stein@animal-college.de">nicole.stein@animal-college.de</a></p>
+
+      <h2>Beschwerderecht</h2>
+      <p>Betroffene Personen haben das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren, wenn sie der Ansicht sind, dass die Verarbeitung ihrer personenbezogenen Daten gegen Datenschutzrecht verstößt.</p>
+      <p>Zuständig kann insbesondere sein:</p>
+      <p>Der Landesbeauftragte für den Datenschutz und die Informationsfreiheit Rheinland-Pfalz</p>
+      <p>Aktuelle Kontaktdaten und Informationen zur Beschwerde sind über die offizielle Website der Behörde erhältlich: <a href="https://www.datenschutz.rlp.de/">https://www.datenschutz.rlp.de/</a></p>
+
+      <h2>Bereitstellung der Daten und automatisierte Entscheidungen</h2>
+      <p>Die Bereitstellung bestimmter Daten, insbesondere der für die Ausbildung und die Anmeldung erforderlichen Angaben, ist notwendig, um die App und ihre Funktionen nutzen zu können.</p>
+      <p>Werden erforderliche Daten nicht bereitgestellt, kann die Nutzung der App oder die organisatorische Begleitung der Ausbildung über die App eingeschränkt sein.</p>
+      <p>Es findet nach der vorgesehenen Funktionsweise keine ausschließlich automatisierte Entscheidungsfindung einschließlich Profiling im Sinne von Art. 22 DSGVO statt.</p>
+      <p>Der Bearbeitungsstatus der Ausbildungsaufgaben wird durch die zuständigen Trainer und Coaches überprüft und manuell aktualisiert.</p>
+
+      <h2>Protokolldaten und Cookies</h2>
+      <p>Beim Betrieb der App können technische Protokolldaten anfallen. Die bei Netlify anfallenden Logs werden nach den vorliegenden Angaben nach 24 Stunden gelöscht.</p>
+      <p>Für die Anmeldung und Sitzungsverwaltung wird Supabase Auth verwendet. Dabei können technisch erforderliche Speichertechnologien oder Sitzungskennungen zum Einsatz kommen.</p>
+      <p>Ob und welche Cookies oder vergleichbaren Technologien tatsächlich verwendet werden, richtet sich nach der technischen Konfiguration der App und der eingebundenen Dienste. Nicht notwendige Technologien dürfen nur unter Beachtung der jeweils geltenden rechtlichen Anforderungen eingesetzt werden.</p>
+
+      <h2>Änderungen dieser Datenschutzerklärung</h2>
+      <p>Diese Datenschutzerklärung kann angepasst werden, wenn sich die Funktionen der App, die eingesetzten technischen Dienste oder die rechtlichen Anforderungen ändern.</p>
+      <p>Es gilt jeweils die aktuell veröffentlichte Fassung.</p>
+    </article>
+  </main>
+</body>
+</html>

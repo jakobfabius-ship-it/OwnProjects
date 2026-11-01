@@ -156,6 +156,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 .pw-overlay{position:fixed;inset:0;background:#1E5C47;display:flex;align-items:center;justify-content:center;z-index:9999;}
 .pw-box{background:#fff;border-radius:16px;padding:36px 32px;max-width:320px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.25);}
+.privacy-consent-box{max-width:520px;max-height:calc(100vh - 40px);overflow:auto;text-align:left}
+.privacy-consent-box .pw-title{text-align:center}
+.privacy-consent-box .pw-sub{line-height:1.6}
+.privacy-consent-box .pw-btn:disabled{opacity:.5;cursor:not-allowed}
+.privacy-accept-label{display:flex;align-items:flex-start;gap:10px;margin-top:18px;color:#333;font-size:13px;line-height:1.5;text-align:left}
+.privacy-accept-label input{width:18px;height:18px;margin:1px 0 0;flex-shrink:0;accent-color:#1E5C47}
 .pw-logo{font-size:32px;margin-bottom:8px;}
 .pw-title{font-size:18px;font-weight:700;color:#1E5C47;margin-bottom:4px;font-family:'DM Sans',sans-serif;}
 .pw-sub{font-size:12px;color:#888;margin-bottom:24px;font-family:'DM Sans',sans-serif;}
@@ -166,6 +172,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .pw-secondary{background:#fff;color:#1E5C47;border:1px solid #C8E8DC}
 .pw-link{display:block;margin-top:12px;color:#1E5C47;font-size:12px;text-decoration:underline;cursor:pointer}
 .pw-err{margin-top:10px;font-size:12px;color:#E53935;min-height:16px;font-family:'DM Sans',sans-serif;}
+.legal-links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;font-size:12px}
+.legal-links a{color:#1E5C47;text-decoration:underline;text-underline-offset:3px}
+.legal-footer{margin-top:18px;padding:18px 14px;border-top:1px solid var(--border)}
+.pw-legal-links{position:absolute;right:14px;bottom:16px;left:14px}
+.pw-legal-links a{color:rgba(255,255,255,.92)}
+@media(max-width:600px){.legal-links{gap:16px;font-size:11px}}
 .participant-modal{position:fixed;inset:0;background:rgba(26,26,24,.45);display:none;align-items:center;justify-content:center;z-index:5000;padding:16px}
 .participant-modal.visible{display:flex}
 .participant-form{background:#fff;border-radius:14px;padding:22px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)}
@@ -199,6 +211,10 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <span id="forgot-password-link" class="pw-link" onclick="forgotPassword()">Passwort vergessen?</span>
     <div class="pw-err" id="pw-err"></div>
   </div>
+  <nav class="legal-links pw-legal-links" aria-label="Rechtliche Informationen">
+    <a href="impressum.html" target="_blank" rel="noopener">Impressum</a>
+    <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a>
+  </nav>
 </div>
 <div id="change-password-overlay" class="pw-overlay" style="display:none">
   <div class="pw-box">
@@ -211,6 +227,28 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <button class="pw-btn pw-secondary" onclick="doLogout()">Abmelden</button>
     <div class="pw-err" id="change-password-err"></div>
   </div>
+  <nav class="legal-links pw-legal-links" aria-label="Rechtliche Informationen">
+    <a href="impressum.html" target="_blank" rel="noopener">Impressum</a>
+    <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a>
+  </nav>
+</div>
+<div id="privacy-consent-overlay" class="pw-overlay" style="display:none">
+  <div class="pw-box privacy-consent-box">
+    <div class="pw-logo">🔒</div>
+    <div class="pw-title">Datenschutzerklärung</div>
+    <div class="pw-sub">Bitte lies die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a>. Beim ersten Einloggen musst du sie akzeptieren, bevor du die App nutzen kannst.</div>
+    <label class="privacy-accept-label">
+      <input id="privacy-accept-checkbox" type="checkbox" onchange="document.getElementById('privacy-accept-button').disabled=!this.checked">
+      <span>Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.</span>
+    </label>
+    <button id="privacy-accept-button" class="pw-btn" type="button" disabled onclick="acceptPrivacyPolicy()">Akzeptieren und fortfahren</button>
+    <button class="pw-btn pw-secondary" type="button" onclick="doLogout()">Abmelden</button>
+    <div class="pw-err" id="privacy-consent-err" role="status" aria-live="polite"></div>
+  </div>
+  <nav class="legal-links pw-legal-links" aria-label="Rechtliche Informationen">
+    <a href="impressum.html" target="_blank" rel="noopener">Impressum</a>
+    <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a>
+  </nav>
 </div>
 <div id="participant-modal" class="participant-modal" onclick="if(event.target===this)closeParticipantForm()">
   <form class="participant-form" onsubmit="createParticipant(event)">
@@ -266,6 +304,12 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <div class="leg-row"><div id="legend-trainer-badge" class="leg-badge"></div>Aufgabe Abgeschlossen</div>
   </div>
 </div>
+<footer class="legal-footer">
+  <nav class="legal-links" aria-label="Rechtliche Informationen">
+    <a href="impressum.html" target="_blank" rel="noopener">Impressum</a>
+    <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a>
+  </nav>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // Supabase Initialisierung
@@ -274,6 +318,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const PRIVACY_POLICY_VERSION='2026-10';
 
 console.log('✅ Supabase verbunden:', SUPABASE_URL);
 
@@ -284,6 +329,7 @@ function showLogin(message='') {
   passwordRecoveryMode=false;
   document.getElementById('pw-overlay').style.display='flex';
   document.getElementById('change-password-overlay').style.display='none';
+  document.getElementById('privacy-consent-overlay').style.display='none';
   document.getElementById('pw-email').value='';
   document.getElementById('pw-input').value='';
   document.getElementById('pw-err').textContent=message;
@@ -292,10 +338,21 @@ function showLogin(message='') {
 function showApp() {
   document.getElementById('pw-overlay').style.display='none';
   document.getElementById('change-password-overlay').style.display='none';
+  document.getElementById('privacy-consent-overlay').style.display='none';
+}
+
+function showPrivacyConsent(){
+  document.getElementById('pw-overlay').style.display='none';
+  document.getElementById('change-password-overlay').style.display='none';
+  document.getElementById('privacy-consent-overlay').style.display='flex';
+  document.getElementById('privacy-accept-checkbox').checked=false;
+  document.getElementById('privacy-accept-button').disabled=true;
+  document.getElementById('privacy-consent-err').textContent='';
 }
 
 function showPasswordChange(){
   document.getElementById('pw-overlay').style.display='none';
+  document.getElementById('privacy-consent-overlay').style.display='none';
   document.getElementById('pw-err').textContent='';
   document.getElementById('change-password-overlay').style.display='flex';
   document.querySelector('#change-password-overlay .pw-title').textContent=passwordRecoveryMode?'Passwort zurücksetzen':'Neues Passwort';
@@ -347,6 +404,23 @@ window.forgotPassword=async function(){
   window.setTimeout(()=>{link.dataset.busy='false';link.style.pointerEvents='auto';},60000);
 };
 
+window.acceptPrivacyPolicy=async function(){
+  const checkbox=document.getElementById('privacy-accept-checkbox');
+  const button=document.getElementById('privacy-accept-button');
+  const errorElement=document.getElementById('privacy-consent-err');
+  if(!checkbox.checked)return;
+  button.disabled=true;
+  errorElement.textContent='Zustimmung wird gespeichert...';
+  const {error}=await supabaseClient.rpc('accept_privacy_policy',{p_policy_version:PRIVACY_POLICY_VERSION});
+  if(error){
+    console.warn('Datenschutzzustimmung konnte nicht gespeichert werden:',error.message);
+    errorElement.textContent='Deine Zustimmung konnte nicht gespeichert werden. Bitte versuche es erneut.';
+    button.disabled=!checkbox.checked;
+    return;
+  }
+  await loadUserProfile();
+};
+
 window.checkPw=async function(){
   const email=document.getElementById('pw-email').value.trim();
   const password=document.getElementById('pw-input').value;
@@ -372,13 +446,19 @@ window.doLogout=async function(){
 async function loadUserProfile(){
   const {data:{user}}=await supabaseClient.auth.getUser();
   if(!user)return;
-  const {data:profile,error}=await supabaseClient.from('profiles').select('role,display_name,must_change_password,trainer_id').eq('id',user.id).maybeSingle();
-  if(error){console.warn('Profil konnte nicht geladen werden:',error.message);return;}
+  const {data:profile,error}=await supabaseClient.from('profiles').select('role,display_name,must_change_password,trainer_id,privacy_policy_version').eq('id',user.id).maybeSingle();
+  if(error){
+    console.warn('Profil konnte nicht geladen werden:',error.message);
+    await supabaseClient.auth.signOut();
+    showLogin('Anmeldung nicht möglich. Bitte aktualisiere zuerst die Datenbank für die Datenschutzzustimmung.');
+    return;
+  }
   if(!profile){
     await supabaseClient.auth.signOut();
     showLogin('Für dieses Konto wurde noch kein Profil angelegt.');
     return;
   }
+  if(profile.privacy_policy_version!==PRIVACY_POLICY_VERSION){showPrivacyConsent();return;}
   if(profile.must_change_password===true||user.user_metadata?.must_change_password===true){showPasswordChange();return;}
   if(profile.role==='admin'){
     showApp();
@@ -695,7 +775,7 @@ async function initializeAuth(){
     showPasswordChange();
     return;
   }
-  if(session){showApp();await loadUserProfile();}else showLogin();
+  if(session){await loadUserProfile();}else showLogin();
 }
 
 // Testtabelle: Datenbank-Status prüfen
