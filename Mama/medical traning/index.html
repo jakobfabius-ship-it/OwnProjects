@@ -3,14 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medical Trainer — Demo</title>
+<title>Medical Trainer</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#F7F6F2;--card:#fff;--border:#E8E5DE;--text:#1A1A18;--muted:#7A7870;--light:#B8B5AD;--green:#2E7D32;--green-bg:#E8F5E9;--yellow:#E65100;--yellow-bg:#FFF3E0;--red:#C62828;--red-bg:#FFEBEE;--blue:#1565C0;--blue-bg:#E3F2FD;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.demo-banner{background:#17503D;color:rgba(255,255,255,0.45);text-align:center;padding:6px;font-size:11px;letter-spacing:0.05em}
-.demo-banner b{color:#fff}
 .topbar{background:#1E5C47;padding:11px 14px;position:sticky;top:0;z-index:100}
 .topbar-inner{max-width:720px;margin:0 auto;display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px}
 .topbar-title{color:#fff;font-size:15px;font-weight:600}
@@ -149,10 +147,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .leg-badge{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .tip{margin-top:10px;font-size:11px;color:var(--light);line-height:1.6}
 @media(max-width:600px){
-  .topbar{flex-direction:column;align-items:flex-start}
-  .trainer-list{width:100%}
+  .topbar-inner{align-items:stretch}
+  .topbar-inner>div:first-child{width:100%}
+  .trainer-list{width:100%;flex:1 1 100%;gap:8px}
+  .admin-inbox-wrap{width:100%}
+  .admin-inbox-btn{width:100%;justify-content:center}
+  .admin-inbox-panel{right:auto;width:100%}
+  .topbar-inner>button{width:100%}
+  .main{padding:10px}
+  .tabs{gap:5px}
+  .tab{padding:7px 10px}
+  .toolbar input{flex:1 1 100%;min-width:0}
+  .sort-btn{flex:1 1 calc(50% - 8px);min-height:36px;white-space:normal}
+  .p-header{gap:7px;padding:10px}
   .contact-grid{grid-template-columns:1fr}
   .p-progbar{width:55px}
+  .tasks-wrap{padding:8px}
+  .subtask-wrap{padding-left:12px}
+  .exp-row{padding-left:12px}
+  .pw-overlay{align-items:flex-start;overflow-y:auto;padding:24px 16px 72px}
+  .pw-box{width:100%;padding:28px 22px;margin:auto}
+  .privacy-consent-box{max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px)}
 }
 .pw-overlay{position:fixed;inset:0;background:#1E5C47;display:flex;align-items:center;justify-content:center;z-index:9999;}
 .pw-box{background:#fff;border-radius:16px;padding:36px 32px;max-width:320px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.25);}
@@ -177,7 +192,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .legal-footer{margin-top:18px;padding:18px 14px;border-top:1px solid var(--border)}
 .pw-legal-links{position:absolute;right:14px;bottom:16px;left:14px}
 .pw-legal-links a{color:rgba(255,255,255,.92)}
-@media(max-width:600px){.legal-links{gap:16px;font-size:11px}}
+@media(max-width:600px){.legal-links{gap:16px;font-size:11px}.pw-legal-links{bottom:16px}}
 .participant-modal{position:fixed;inset:0;background:rgba(26,26,24,.45);display:none;align-items:center;justify-content:center;z-index:5000;padding:16px}
 .participant-modal.visible{display:flex}
 .participant-form{background:#fff;border-radius:14px;padding:22px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2)}
@@ -265,7 +280,6 @@ body.participant-mode .tasks-wrap input,body.participant-mode .tasks-wrap textar
     <div class="participant-form-actions"><button type="button" onclick="closeParticipantForm()">Abbrechen</button><button class="primary" type="submit">Teilnehmer speichern</button></div>
   </form>
 </div>
-<div class="demo-banner"><b>✦ DEMO</b> — Alle Namen sind Platzhalter ✦</div>
 <div class="topbar">
   <div class="topbar-inner">
     <div>
